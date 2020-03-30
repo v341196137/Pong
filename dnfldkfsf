@@ -4,6 +4,7 @@
 import pygame
 pygame.init()
 import sys
+from random import randrange
 
 # Variables
 paddleSize = 100
@@ -16,6 +17,9 @@ player2Direction = 0
 ballSize = 50
 ballX = 400 - (ballSize/2)
 ballY = 300 - (ballSize/2)
+ballSpeed = 1
+ballDirY = randrange(-1, 1, 2)
+ballDirX = randrange(-1, 1, 2)
 r = 255
 g = 0
 b = 0
@@ -24,34 +28,68 @@ dg = 1
 db = 0
 
 screen = pygame.display.set_mode((800, 600))
-while 1:
-    screen.fill((0, 0, 0))
+
+# startGame
+# no params
+# puts ball back into middle
+# chooses a random direction for the ball to go
+def startGame():
+    global ballX
+    global ballY
+    global ballSpeed
+    ballX = 400 - (ballSize/2)
+    ballY = 300 - (ballSize/2)
+    ballSpeed = 1
     
+startGame()
+while 1:
+    #fill screen
+    screen.fill((0, 0, 0))
+
+    #handle i/o
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-        #so the keys don't work.....
-            if event.key == 'pygame.W':
+            if event.key == pygame.K_w:
                 player1Direction = -1
-            elif event.key == 'pygame.S':
+            elif event.key == pygame.K_s:
                 player1Direction = 1
-            elif event.key == 'pygame.I':
+            elif event.key == pygame.K_i:
                 player2Direction = -1
-            elif event.key == 'pygame.K':
+            elif event.key == pygame.K_k:
                 player2Direction = 1
         elif event.type == pygame.KEYUP:
-            if (event.key == 'pygame.W') or (event.key == 'pygame.S'):
+            if (event.key == pygame.K_w) or (event.key == pygame.K_s):
                 player1Direction = 0
-            elif (event.key == 'pygame.I') or (event.key == 'pygame.K'):
+            elif (event.key == pygame.K_i) or (event.key == pygame.K_k):
                 player2Direction = 0
 
+    
+    #ball movement
+    ballX += ballSpeed*ballDirX
+    ballY += ballSpeed*ballDirY
+    #ball bounce
+    if ballY <= 0 or ballY >= 600-ballSize:
+        ballDirY *= -1
+    #score points
+    if ballX <= 0:
+        player2Score += 1
+        startGame()
+    elif ballX >= 800-ballSize:
+        player1Score += 1
+        startGame()
+
+    #update player positions
+    player1Pos += player1Direction
+    player2Pos += player2Direction
+    
     #draw stuff
     pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
-    pygame.draw.rect(screen, (r, g, b), (20, player1Pos, 20, paddleSize), 1)
-    pygame.draw.rect(screen, (r, g, b), (760, player2Pos, 20, paddleSize), 1)
-    
+    pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
+    pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
+
     #change colours
     r+=dr
     g+=dg
@@ -80,5 +118,7 @@ while 1:
         dr=1
         dg=0
         db=0
+
+    #draw over
     pygame.display.update()
     pygame.display.flip()
