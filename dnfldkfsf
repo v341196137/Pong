@@ -1,0 +1,66 @@
+# Pong
+
+# Imports 
+import pygame
+pygame.init()
+import sys
+
+# Variables
+paddleSize = 50
+player1Score = 0
+player2Score = 0
+player1Pos = 300 - (paddleSize/2)
+player2Pos = 300 - (paddleSize/2)
+player1Direction = 0
+player2Direction = 0
+ballX = 400
+ballY = 300
+r = 255
+g = 0
+b = 0
+dr = 0
+dg = 1
+db = 0
+
+screen = pygame.display.set_mode((800, 600))
+while 1:
+    screen.fill(0, 0, 0)
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == PYGAME.KEYDOWN:
+            if event.key == :
+        elif event.type == PYGAME.KEYUP:
+            
+                
+    r+=dr
+    g+=dg
+    b+=db
+    if r>=255 and g>=255:
+        dr=-1
+        dg=0
+        db=0
+    elif r>=255 and b>=255:
+        dr=0
+        dg=0
+        db=-1
+    elif r>=255 and b==0:
+        dr=0
+        dg=1
+        db=0
+    elif g>=255 and b>=255:
+        dr=0
+        dg=-1
+        db=0
+    elif g>=255 and r==0:
+        dr=0
+        dg=0
+        db=1
+    elif b>=255 and g==0:
+        dr=1
+        dg=0
+        db=0
+    pygame.display.update()
+    pygame.display.flip()
