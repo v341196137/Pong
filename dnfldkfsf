@@ -1,7 +1,4 @@
 # Pong
-# Gamers
-# March 30, 2020
-# Python is wack
 
 # Imports 
 import pygame
@@ -91,8 +88,10 @@ while 1:
         ballDirX = -1
 
     #update player positions
-    player1Pos += player1Direction
-    player2Pos += player2Direction
+    if (player1Pos > 0 and player1Pos < 600 - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= 600 - paddleSize and player1Direction == -1):
+        player1Pos += player1Direction
+    if (player2Pos > 0 and player2Pos < 600 - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= 600 - paddleSize and player2Direction == -1):
+        player2Pos += player2Direction
     
     #draw stuff
     pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
