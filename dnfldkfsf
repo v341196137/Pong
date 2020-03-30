@@ -6,15 +6,16 @@ pygame.init()
 import sys
 
 # Variables
-paddleSize = 50
+paddleSize = 100
 player1Score = 0
 player2Score = 0
 player1Pos = 300 - (paddleSize/2)
 player2Pos = 300 - (paddleSize/2)
 player1Direction = 0
 player2Direction = 0
-ballX = 400
-ballY = 300
+ballSize = 50
+ballX = 400 - (ballSize/2)
+ballY = 300 - (ballSize/2)
 r = 255
 g = 0
 b = 0
@@ -24,17 +25,34 @@ db = 0
 
 screen = pygame.display.set_mode((800, 600))
 while 1:
-    screen.fill(0, 0, 0)
+    screen.fill((0, 0, 0))
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        elif event.type == PYGAME.KEYDOWN:
-            if event.key == :
-        elif event.type == PYGAME.KEYUP:
-            
-                
+        elif event.type == pygame.KEYDOWN:
+        #so the keys don't work.....
+            if event.key == 'pygame.W':
+                player1Direction = -1
+            elif event.key == 'pygame.S':
+                player1Direction = 1
+            elif event.key == 'pygame.I':
+                player2Direction = -1
+            elif event.key == 'pygame.K':
+                player2Direction = 1
+        elif event.type == pygame.KEYUP:
+            if (event.key == 'pygame.W') or (event.key == 'pygame.S'):
+                player1Direction = 0
+            elif (event.key == 'pygame.I') or (event.key == 'pygame.K'):
+                player2Direction = 0
+
+    #draw stuff
+    pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
+    pygame.draw.rect(screen, (r, g, b), (20, player1Pos, 20, paddleSize), 1)
+    pygame.draw.rect(screen, (r, g, b), (760, player2Pos, 20, paddleSize), 1)
+    
+    #change colours
     r+=dr
     g+=dg
     b+=db
