@@ -81,6 +81,12 @@ while 1:
         player1Score += 1
         startGame()
 
+    #recieve ball
+    if ballX == 60:
+        ballDirX = 1
+    elif ballX == 720-ballSize:
+        ballDirX = -1
+
     #update player positions
     player1Pos += player1Direction
     player2Pos += player2Direction
