@@ -82,9 +82,9 @@ while 1:
         startGame()
 
     #recieve ball
-    if ballX == 60:
+    if (ballX == 60) and (ballY + ballSize >= player1Pos) and (ballY - ballSize <= player1Pos + paddleSize):
         ballDirX = 1
-    elif ballX == 720-ballSize:
+    elif (ballX == 720 - ballSize) and (ballY + ballSize >= player2Pos) and (ballY - ballSize <= player2Pos + paddleSize):
         ballDirX = -1
 
     #update player positions
