@@ -8,6 +8,7 @@ import pygame
 pygame.init()
 import sys
 from random import randrange
+import datetime
 
 # Variables
 paddleSize = 100
@@ -29,8 +30,18 @@ b = 0
 dr = 0
 dg = 1
 db = 0
+month, day = datetime.datetime.now().month, datetime.datetime.now().day
 comicSans = pygame.font.SysFont("Comic Sans MS", 20)
 screen = pygame.display.set_mode((800, 600))
+theme = ""
+ballImage = 0
+paddleImage = 0
+if (month == 9) and (day == 20):
+    theme = "joseph"
+    ballImage = pygame.image.load("thonk.gif")
+    paddleImage = pygame.image.load("creeper.png")
+else:
+    theme = "default"
 
 # startGame
 # @param ballX, reset x position of the ball back to the middle
@@ -107,11 +118,15 @@ while 1:
         winMessage = comicSans.render("Player 2 wins!", 0, (r, g, b))
         screen.blit(winMessage, (350, 270))
         
-    #draw stuff
-    pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
-    pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
-    pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
-
+    #draw stuff based on theme assigned by date
+    if theme == "default":
+        pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
+        pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
+        pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
+    elif theme == "joseph":
+        screen.blit(ballImage, (ballX, ballY))
+        screen.blit(paddleImage, (40, player1Pos))
+        screen.blit(paddleImage, (720, player2Pos))
     #change colours
     r+=dr
     g+=dg
@@ -140,7 +155,7 @@ while 1:
         dr=1
         dg=0
         db=0
-
+    
     #draw over
     pygame.display.update()
     pygame.display.flip()
