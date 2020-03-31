@@ -40,6 +40,14 @@ if (month == 9) and (day == 20):
     theme = "joseph"
     ballImage = pygame.image.load("thonk.gif")
     paddleImage = pygame.image.load("creeper.png")
+elif (month == 10) and (day == 31):
+    theme = "halloween"
+    ballImage = pygame.image.load("halloweenBall.png")
+    paddleImage = pygame.image.load("bone.png")
+elif (month == 12) and (day == 25):
+    theme = "christmas"
+    ballImage = pygame.image.load("christmasBall.png")
+    paddleImage = pygame.image.load("christmasPaddle.png")
 else:
     theme = "default"
 
@@ -56,8 +64,11 @@ def startGame(ballX, ballY, ballSpeed):
 
 ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
 while 1:
-    #fill screen
-    screen.fill((0, 0, 0))
+    #fill screen based on theme
+    if (theme == "default") or (theme == "joseph") or (theme == "halloween"):
+        screen.fill((0, 0, 0))
+    elif (theme == "christmas"):
+        screen.fill((200, 230, 255))
 
     #handle i/o
     for event in pygame.event.get():
@@ -123,7 +134,7 @@ while 1:
         pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
         pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
         pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
-    elif theme == "joseph":
+    else:
         screen.blit(ballImage, (ballX, ballY))
         screen.blit(paddleImage, (40, player1Pos))
         screen.blit(paddleImage, (720, player2Pos))
