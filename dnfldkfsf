@@ -33,18 +33,17 @@ comicSans = pygame.font.SysFont("Comic Sans MS", 20)
 screen = pygame.display.set_mode((800, 600))
 
 # startGame
-# no params
-# puts ball back into middle
-# resets ball speed to 1
-def startGame():
-    global ballX
-    global ballY
-    global ballSpeed
+# @param ballX, reset x position of the ball back to the middle
+# @param ballY, resets y position of the ball back to the middle
+# @param ballSpeed, puts the ball's speed back to 1
+# @return returns all the values back to be reassigned because global variables are bad
+def startGame(ballX, ballY, ballSpeed):
     ballX = 400 - (ballSize/2)
     ballY = 300 - (ballSize/2)
     ballSpeed = 1
-    
-startGame()
+    return ballX, ballY, ballSpeed
+
+ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
 while 1:
     #fill screen
     screen.fill((0, 0, 0))
@@ -79,10 +78,10 @@ while 1:
     #score points
     if ballX <= 0:
         player2Score += 1
-        startGame()
+        ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
     elif ballX >= 800-ballSize:
         player1Score += 1
-        startGame()
+        ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
 
     #recieve ball
     if (abs(ballX - 60 <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
