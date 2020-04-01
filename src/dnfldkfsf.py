@@ -151,7 +151,7 @@ while inPlay:
         #button outlines
         for yPos in range(200, 300, 70):
             pygame.draw.rect(screen, (r, g, b), (300, yPos, 200, 50), 1)
-    elif gameMode == "instruction":
+    elif gameMode == "instructions":
         #buttons
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (5, 0))
