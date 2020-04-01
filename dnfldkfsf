@@ -120,7 +120,6 @@ while 1:
     if (abs(ballX - 60 <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
         ballDirX = 1
         angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*3
-        print angle
     elif (abs(720 - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
         ballDirX = -1
         angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*3
