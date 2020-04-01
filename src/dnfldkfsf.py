@@ -113,7 +113,7 @@ while inPlay:
             if event.key == pygame.K_w:
                 player1Direction = -1
             elif event.key == pygame.K_s:
-                player1Direction = 1
+                player2Direction = 0
             elif event.key == pygame.K_i:
                 player2Direction = -1
             elif event.key == pygame.K_k:
