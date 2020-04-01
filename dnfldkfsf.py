@@ -34,7 +34,7 @@ dg = 1
 db = 0
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
 comicSans = pygame.font.SysFont("Comic Sans MS", 20)
-buttonComicSans = pygame.font.SysFont("Comic Sans MS", 40)
+buttonComicSans = pygame.font.SysFont("Comic Sans MS", 30)
 titleComicSans = pygame.font.SysFont("Comic Sans MS", 60)
 gameMode = "menu"
 theme = ""
@@ -93,9 +93,11 @@ while 1:
         if gameMode == "menu":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 350) and (mouseX <= 450):
-                    if(mouseY >= 200) and (mouseY <= 250):
+                if (mouseX >= 300) and (mouseX <= 500):
+                    if (mouseY >= 200) and (mouseY <= 250):
                         gameMode = "game"
+                    elif (mouseY >= 270) and (mouseY <= 320):
+                        gameMode = "instructions"
         elif gameMode == "game":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
@@ -119,9 +121,14 @@ while 1:
         title = titleComicSans.render("Pong!", 0, (r, g, b))
         screen.blit(title, (325, 20))
         play = buttonComicSans.render("Play!", 0, (r, g, b))
-        screen.blit(play, (360, 195))
+        screen.blit(play, (360, 200))
+        instructions = buttonComicSans.render("How to play", 0, (r, g, b))
+        screen.blit(instructions, (320, 270))
         #button outlines
-        pygame.draw.rect(screen, (r, g, b), (350, 200, 100, 50), 1)
+        for yPos in range(200, 300, 70):
+            pygame.draw.rect(screen, (r, g, b), (300, yPos, 200, 50), 1)
+    elif gameMode == "instruction":
+        print ("Idk handle later")
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
