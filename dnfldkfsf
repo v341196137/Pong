@@ -7,6 +7,7 @@
 import pygame
 pygame.init()
 import sys
+import random
 from random import randrange
 import datetime
 
@@ -22,6 +23,7 @@ ballSize = 50
 ballX = 400 - (ballSize/2)
 ballY = 300 - (ballSize/2)
 ballSpeed = 1
+angle = random.random()*3
 ballDirY = randrange(-1, 1, 2)
 ballDirX = randrange(-1, 1, 2)
 r = 255
@@ -36,7 +38,24 @@ screen = pygame.display.set_mode((800, 600))
 theme = ""
 ballImage = 0
 paddleImage = 0
-if (month == 9) and (day == 20):
+
+# Functions
+# startGame
+# @param ballX, reset x position of the ball back to the middle
+# @param ballY, resets y position of the ball back to the middle
+# @param ballSpeed, puts the ball's speed back to 1
+# @return returns all the values back to be reassigned because global variables are bad
+def startGame(ballX, ballY, ballSpeed, angle):
+    ballX = 400 - (ballSize/2)
+    ballY = 300 - (ballSize/2)
+    ballSpeed = 1
+    angle = random.random()*3
+    return ballX, ballY, ballSpeed, angle
+
+#create the theme
+if (month == 4) and (day == 1):
+    theme = "aprfools"
+elif (month == 9) and (day == 20):
     theme = "joseph"
     ballImage = pygame.image.load("thonk.gif")
     paddleImage = pygame.image.load("creeper.png")
@@ -51,22 +70,14 @@ elif (month == 12) and (day == 25):
 else:
     theme = "default"
 
-# startGame
-# @param ballX, reset x position of the ball back to the middle
-# @param ballY, resets y position of the ball back to the middle
-# @param ballSpeed, puts the ball's speed back to 1
-# @return returns all the values back to be reassigned because global variables are bad
-def startGame(ballX, ballY, ballSpeed):
-    ballX = 400 - (ballSize/2)
-    ballY = 300 - (ballSize/2)
-    ballSpeed = 1
-    return ballX, ballY, ballSpeed
-
-ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
+#start the game
+ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
 while 1:
     #fill screen based on theme
     if (theme == "default") or (theme == "joseph") or (theme == "halloween"):
         screen.fill((0, 0, 0))
+    elif (theme == "aprfools"):
+        screen.fill((255 - r, 255 - g, 255 -b))
     elif (theme == "christmas"):
         screen.fill((200, 230, 255))
 
@@ -93,23 +104,26 @@ while 1:
     
     #ball movement
     ballX += ballSpeed*ballDirX
-    ballY += ballSpeed*ballDirY
+    ballY += angle*ballDirY
     #ball bounce
     if ballY <= 0 or ballY >= 600-ballSize:
         ballDirY *= -1
     #score points
     if ballX <= 0:
         player2Score += 1
-        ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
+        ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
     elif ballX >= 800-ballSize:
         player1Score += 1
-        ballX, ballY, ballSpeed = startGame(ballX, ballY, ballSpeed)
+        ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
 
     #recieve ball
     if (abs(ballX - 60 <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
         ballDirX = 1
+        angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*3
+        print angle
     elif (abs(720 - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
         ballDirX = -1
+        angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*3
 
     #update player positions
     if (player1Pos > 0 and player1Pos < 600 - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= 600 - paddleSize and player1Direction == -1):
@@ -130,7 +144,7 @@ while 1:
         screen.blit(winMessage, (350, 270))
         
     #draw stuff based on theme assigned by date
-    if theme == "default":
+    if (theme == "default") or (theme == "aprfools"):
         pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
         pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
         pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
