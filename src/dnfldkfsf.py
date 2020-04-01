@@ -117,6 +117,11 @@ while inPlay:
                         gameMode = "game"
                     elif (mouseY >= 270) and (mouseY <= 320):
                         gameMode = "instructions"
+        elif gameMode == "instructions":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                if (mouseX >= 0) and (mouseX <= 60) and (mouseY >= 0) and (mouseY <= 40):
+                    gameMode = "menu"
         elif gameMode == "game":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
@@ -147,7 +152,10 @@ while inPlay:
         for yPos in range(200, 300, 70):
             pygame.draw.rect(screen, (r, g, b), (300, yPos, 200, 50), 1)
     elif gameMode == "instruction":
-        print ("Idk handle later")
+        #buttons
+        backButton = comicSans.render("Back", 0, (r, g, b))
+        screen.blit(backButton, (5, 0))
+        pygame.draw.rect(screen, (r, g, b), (0, 0, 60, 40), 1)
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
