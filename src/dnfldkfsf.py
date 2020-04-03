@@ -222,7 +222,10 @@ while inPlay:
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
         #draw stuff based on theme assigned by date
-        if (theme == "default") or (theme == "aprfools"):
+        if (theme == "default" or theme == "aprfools") or (ballImage == None or ballPaddle == None):
+            if (ballSpeed == None or ballPaddle == None) and (theme != "default" and theme != "aprfools"):
+                print("Had trouble loading a ball or paddle image.")
+                
             pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
