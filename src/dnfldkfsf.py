@@ -115,6 +115,10 @@ while inPlay:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= height/2) and (mouseX <= height*5/6):
                     if (mouseY >= height/3) and (mouseY <= height*5/12):
+                        for i in range(4):
+                            keysPressed[i] = False
+                        player1Score = 0
+                        player2Score = 0
                         gameMode = "game"
                     elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
                         gameMode = "instructions"
@@ -190,10 +194,10 @@ while inPlay:
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
             ballDirX = 1
-            angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200)
+            angle = (((ballY + ballSize) - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200)
         elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
-            angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*(height/200)
+            angle = (((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200)
 
         #update player positions
         if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
