@@ -35,7 +35,7 @@ player2Direction = 0
 ballSize = height/12
 ballX = (height*4/3) - (ballSize/2)
 ballY = (height/2) - (ballSize/2)
-ballSpeed = height/600
+ballSpeed = float(height)/600
 angle = random.random()*(height/200)
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
@@ -46,9 +46,9 @@ dr = 0
 dg = 1
 db = 0
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
-comicSans = pygame.font.SysFont("Comic Sans MS", height/30)
-buttonComicSans = pygame.font.SysFont("Comic Sans MS", height/20)
-titleComicSans = pygame.font.SysFont("Comic Sans MS", height/10)
+comicSans = createFont("Comic Sans MS", height/30)
+buttonComicSans = createFont("Comic Sans MS", height/20)
+titleComicSans = createFont("Comic Sans MS", height/10)
 gameMode = "menu"
 theme = ""
 ballImage = 0
@@ -86,7 +86,7 @@ else:
 def startGame(ballX, ballY, ballSpeed, angle):
     ballX = (height*2/3) - (ballSize/2)
     ballY = (height/2) - (ballSize/2)
-    ballSpeed = height/600
+    ballSpeed = float(height)/600
     angle = random.random()*(height/200)
     return ballX, ballY, ballSpeed, angle
 
@@ -165,12 +165,13 @@ while inPlay:
         #buttons
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
-        pygame.draw.rect(screen, (r, g, b), (0, 0, height*60/600, height*40/600), 1)
+        pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
+
     elif gameMode == "settings":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
-        pygame.draw.rect(screen, (r, g, b), (0, 0, height*60/600, height*40/600), 1)
+        pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
@@ -187,22 +188,22 @@ while inPlay:
             ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
 
         #recieve ball
-        if (abs(ballX - (height*60/600) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
+        if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
             ballDirX = 1
             angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200)
-        elif (abs((height*720/600) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
+        elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
             angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*(height/200)
 
         #update player positions
         if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
-            player1Pos += player1Direction * (height/600)
+            player1Pos += player1Direction * (height/300)
         if (player2Pos > 0 and player2Pos < height - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize and player2Direction == -1):
-            player2Pos += player2Direction * (height/600)
+            player2Pos += player2Direction * (height/300)
 
         #score check
         score = comicSans.render("Score\n" + str(player1Score) + ":" + str(player2Score), 0, (r, g, b))
-        screen. blit(score, (height*350/600, 0))
+        screen. blit(score, (height*35/60, 0))
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
         #draw stuff based on theme assigned by date
@@ -213,7 +214,9 @@ while inPlay:
         else:
             screen.blit(ballImage, (ballX, ballY))
             screen.blit(paddleImage, (height/15, player1Pos))
-            screen.blit(paddleImage, (height*6/5, player2Pos))
+            screen.blit(pygame.transform.flip(paddleImage, True, False), (height*6/5, player2Pos))
+        #slow increase in ball speed
+        ballSpeed += float(height)/240000
     elif gameMode == "winScreen":
         if player1Score == 7:
             winMessage = comicSans.render("Player 1 wins!", 0, (r, g, b))
