@@ -24,18 +24,19 @@ def createFont(font, size):
 ##############################################
 
 ########## VARIABLES ##########
-paddleSize = 100
+height = 600
+paddleSize = height/6
 player1Score = 0
 player2Score = 0
-player1Pos = 300 - (paddleSize/2)
-player2Pos = 300 - (paddleSize/2)
+player1Pos = (height/2) - (paddleSize/2)
+player2Pos = (height/2) - (paddleSize/2)
 player1Direction = 0
 player2Direction = 0
-ballSize = 50
-ballX = 400 - (ballSize/2)
-ballY = 300 - (ballSize/2)
-ballSpeed = 1
-angle = random.random()*3
+ballSize = height/12
+ballX = (height*4/3) - (ballSize/2)
+ballY = (height/2) - (ballSize/2)
+ballSpeed = height/600
+angle = random.random()*(height/200)
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
 r = 255
@@ -45,14 +46,14 @@ dr = 0
 dg = 1
 db = 0
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
-comicSans = pygame.font.SysFont("Comic Sans MS", 20)
-buttonComicSans = pygame.font.SysFont("Comic Sans MS", 30)
-titleComicSans = pygame.font.SysFont("Comic Sans MS", 60)
+comicSans = pygame.font.SysFont("Comic Sans MS", height/30)
+buttonComicSans = pygame.font.SysFont("Comic Sans MS", height/20)
+titleComicSans = pygame.font.SysFont("Comic Sans MS", height/10)
 gameMode = "menu"
 theme = ""
 ballImage = 0
 paddleImage = 0
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((height*4/3, height))
 
 ########## VARIABLES ##########
 
@@ -83,10 +84,10 @@ else:
 # @param angle, generates a random angle for the ball
 # @return returns all the values back to be reassigned because global variables are bad
 def startGame(ballX, ballY, ballSpeed, angle):
-    ballX = 400 - (ballSize/2)
-    ballY = 300 - (ballSize/2)
-    ballSpeed = 1
-    angle = random.random()*3
+    ballX = (height*2/3) - (ballSize/2)
+    ballY = (height/2) - (ballSize/2)
+    ballSpeed = height/600
+    angle = random.random()*(height/200)
     return ballX, ballY, ballSpeed, angle
 
 ########## FUNCTIONS ##########
@@ -112,15 +113,22 @@ while inPlay:
         if gameMode == "menu":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 300) and (mouseX <= 500):
-                    if (mouseY >= 200) and (mouseY <= 250):
+                if (mouseX >= height/2) and (mouseX <= height*5/6):
+                    if (mouseY >= height/3) and (mouseY <= height*5/12):
                         gameMode = "game"
-                    elif (mouseY >= 270) and (mouseY <= 320):
+                    elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
                         gameMode = "instructions"
+                    elif (mouseY >= height*17/30) and (mouseY <= height*13/20):
+                        gameMode = "settings"
         elif gameMode == "instructions":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 0) and (mouseX <= 60) and (mouseY >= 0) and (mouseY <= 40):
+                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
+                    gameMode = "menu"
+        elif gameMode == "settings":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
                     gameMode = "menu"
         elif gameMode == "game":
             if event.type == pygame.KEYDOWN:
@@ -143,71 +151,78 @@ while inPlay:
     if gameMode == "menu":
         #text
         title = titleComicSans.render("Pong!", 0, (r, g, b))
-        screen.blit(title, (325, 20))
+        screen.blit(title, (height*13/24, height/30))
         play = buttonComicSans.render("Play!", 0, (r, g, b))
-        screen.blit(play, (360, 200))
+        screen.blit(play, (height*3/5, height/3))
         instructions = buttonComicSans.render("How to play", 0, (r, g, b))
-        screen.blit(instructions, (320, 270))
+        screen.blit(instructions, (height*320/600, height*270/600))
+        settings = buttonComicSans.render("Settings", 0, (r, g, b))
+        screen.blit(settings, (height*340/600, height*340/600))
         #button outlines
-        for yPos in range(200, 300, 70):
-            pygame.draw.rect(screen, (r, g, b), (300, yPos, 200, 50), 1)
+        for yPos in range(height*200/600, height*350/600, height*70/600):
+            pygame.draw.rect(screen, (r, g, b), (height/2, yPos, height/3, height/12), 1)
     elif gameMode == "instructions":
         #buttons
         backButton = comicSans.render("Back", 0, (r, g, b))
-        screen.blit(backButton, (5, 0))
-        pygame.draw.rect(screen, (r, g, b), (0, 0, 60, 40), 1)
+        screen.blit(backButton, (height/120, 0))
+        pygame.draw.rect(screen, (r, g, b), (0, 0, height*60/600, height*40/600), 1)
+    elif gameMode == "settings":
+        #back button
+        backButton = comicSans.render("Back", 0, (r, g, b))
+        screen.blit(backButton, (height/120, 0))
+        pygame.draw.rect(screen, (r, g, b), (0, 0, height*60/600, height*40/600), 1)
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
         #ball bounce
-        if ballY <= 0 or ballY >= 600-ballSize:
+        if ballY <= 0 or ballY >= height-ballSize:
             ballDirY *= -1
         #score points
         if ballX <= 0:
             player2Score += 1
             ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
-        elif ballX >= 800-ballSize:
+        elif ballX >= (height*4/3)-ballSize:
             player1Score += 1
             ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
 
         #recieve ball
-        if (abs(ballX - 60 <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
+        if (abs(ballX - (height*60/600) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
             ballDirX = 1
-            angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*3
-        elif (abs(720 - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
+            angle = ((ballY - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200)
+        elif (abs((height*720/600) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
-            angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*3
+            angle = ((ballY - (player2Pos + (paddleSize/2)))/paddleSize)*(height/200)
 
         #update player positions
-        if (player1Pos > 0 and player1Pos < 600 - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= 600 - paddleSize and player1Direction == -1):
-            player1Pos += player1Direction
-        if (player2Pos > 0 and player2Pos < 600 - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= 600 - paddleSize and player2Direction == -1):
-            player2Pos += player2Direction
+        if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
+            player1Pos += player1Direction * (height/600)
+        if (player2Pos > 0 and player2Pos < height - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize and player2Direction == -1):
+            player2Pos += player2Direction * (height/600)
 
         #score check
         score = comicSans.render("Score\n" + str(player1Score) + ":" + str(player2Score), 0, (r, g, b))
-        screen. blit(score, (350, 0))
+        screen. blit(score, (height*350/600, 0))
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
         #draw stuff based on theme assigned by date
         if (theme == "default") or (theme == "aprfools"):
             pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (40, player1Pos, 20, paddleSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (720, player2Pos, 20, paddleSize), 1)
+            pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
+            pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
         else:
             screen.blit(ballImage, (ballX, ballY))
-            screen.blit(paddleImage, (40, player1Pos))
-            screen.blit(paddleImage, (720, player2Pos))
+            screen.blit(paddleImage, (height/15, player1Pos))
+            screen.blit(paddleImage, (height*6/5, player2Pos))
     elif gameMode == "winScreen":
         if player1Score == 7:
             winMessage = comicSans.render("Player 1 wins!", 0, (r, g, b))
-            screen.blit(winMessage, (325, 270))
+            screen.blit(winMessage, (height*13/24, height*9/20))
         else:
             winMessage = comicSans.render("Player 2 wins!", 0, (r, g, b))
-            screen.blit(winMessage, (325, 270))
+            screen.blit(winMessage, (height*13/24, height*9/20))
         playAgainMessage = comicSans.render("Click anywhere or any  key to return to the main menu", 0, (r, g, b))
-        screen.blit(playAgainMessage, (150, 400))
+        screen.blit(playAgainMessage, (height/4, height*2/3))
     #change colours
     r+=dr
     g+=dg
