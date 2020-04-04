@@ -115,8 +115,8 @@ while inPlay:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= height/2) and (mouseX <= height*5/6):
                     if (mouseY >= height/3) and (mouseY <= height*5/12):
-                        for i in range(4):
-                            keysPressed[i] = False
+                        player1Direction = 0
+                        player2Direction = 0
                         player1Score = 0
                         player2Score = 0
                         gameMode = "game"
