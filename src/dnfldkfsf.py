@@ -3,14 +3,23 @@
 # March 30, 2020
 # Python is wack
 
-# Imports 
+# Imports
 import pygame
 import sys
 import random
 import datetime
 from random import randrange
 
-pygame.init() # start the hell
+pygame.init()  # start the hell
+
+########## CONSTS ##########
+DEFAULT_WIDTH = 800
+DEFAULT_HEIGHT = 600
+DEFAULT_PADDLE_SIZE = 100
+DEFAULT_BALL_SIZE = 50
+############################
+
+screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
 
 ########## INITIALIZATION FUNCTIONS ##########
 def loadImage(imageName):
@@ -20,23 +29,25 @@ def loadTransparentImage(imageName):
     return pygame.image.load("/assets/pictures/"+imageName).convert_alpha()
 
 def createFont(font, size):
-    return pygame.font.SysFont(font, size)
+    return pygame.font.SysFont(font, int(size))
 ##############################################
 
 ########## VARIABLES ##########
-height = 600
-paddleSize = height/6
-player1Score = 0
-player2Score = 0
+
+height = DEFAULT_HEIGHT
+
+comicSans = createFont("Comic Sans MS", height/30)
+buttonComicSans = createFont("Comic Sans MS", height/20)
+titleComicSans = createFont("Comic Sans MS", height/10)
+
+paddleSize = DEFAULT_PADDLE_SIZE
+ballSize = DEFAULT_BALL_SIZE
+
 player1Pos = (height/2) - (paddleSize/2)
 player2Pos = (height/2) - (paddleSize/2)
 player1Direction = 0
 player2Direction = 0
-ballSize = height/12
-ballX = (height*4/3) - (ballSize/2)
-ballY = (height/2) - (ballSize/2)
-ballSpeed = float(height)/600
-angle = random.random()*(height/200)
+
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
 r = 255
@@ -46,29 +57,27 @@ dr = 0
 dg = 1
 db = 0
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
-comicSans = createFont("Comic Sans MS", height/30)
-buttonComicSans = createFont("Comic Sans MS", height/20)
-titleComicSans = createFont("Comic Sans MS", height/10)
-gameMode = "menu"
-theme = ""
-ballImage = 0
-paddleImage = 0
-screen = pygame.display.set_mode((height*4/3, height))
 
-########## VARIABLES ##########
+player1Score = 0
+player2Score = 0
+
+ballImage, paddleImage = None, None
+ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
+###############################
 
 #create the theme
-if (month == 4) and (day == 1):
+theme = ""
+if month == 4 and day == 1:
     theme = "aprfools"
-elif (month == 9) and (day == 20):
+elif month == 9 and day == 20:
     theme = "joseph"
     ballImage = loadTransparentImage("thonk.gif")
     paddleImage = loadImage("creeper.png")
-elif (month == 10) and (day == 31):
+elif month == 10 and day == 31:
     theme = "halloween"
     ballImage = loadTransparentImage("halloweenBall.png")
     paddleImage = loadTransparentImage("bone.png")
-elif (month == 12) and (day == 25):
+elif month == 12 and day == 25:
     theme = "christmas"
     ballImage = loadTransparentImage("christmasBall.png")
     paddleImage = loadTransparentImage("christmasPaddle.png")
@@ -83,27 +92,29 @@ else:
 # @param ballSpeed, puts the ball's speed back to 1
 # @param angle, generates a random angle for the ball
 # @return returns all the values back to be reassigned because global variables are bad
-def startGame(ballX, ballY, ballSpeed, angle):
-    ballX = (height*2/3) - (ballSize/2)
-    ballY = (height/2) - (ballSize/2)
-    ballSpeed = float(height)/600
-    angle = random.random()*(height/200)
-    return ballX, ballY, ballSpeed, angle
+def resetGame():
+    newBallX = (height*2/3) - (ballSize/2)
+    newBallY = (height/2) - (ballSize/2)
+    newBallSpeed = float(height)/600
+    newAngle = random.random()*(height/200)
+
+    return newBallX, newBallY, newBallSpeed, newAngle
 
 ########## FUNCTIONS ##########
 
 ########## GAME ##########
 #start the game
-ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
+gameMode = "menu"
+ballX, ballY, ballSpeed, angle = resetGame()
 inPlay = True
 
 while inPlay:
     #fill screen based on theme
-    if (theme == "default") or (theme == "joseph") or (theme == "halloween"):
+    if theme == "default" or theme == "joseph" or theme == "halloween":
         screen.fill((0, 0, 0))
-    elif (theme == "aprfools"):
+    elif theme == "aprfools":
         screen.fill((255 - r, 255 - g, 255 -b))
-    elif (theme == "christmas"):
+    elif theme == "christmas":
         screen.fill((200, 230, 255))
 
     #handle i/o, different i/o based on mode
@@ -163,7 +174,7 @@ while inPlay:
         settings = buttonComicSans.render("Settings", 0, (r, g, b))
         screen.blit(settings, (height*340/600, height*340/600))
         #button outlines
-        for yPos in range(height*200/600, height*350/600, height*70/600):
+        for yPos in range(int(height*200/600), int(height*350/600), int(height*70/600)):
             pygame.draw.rect(screen, (r, g, b), (height/2, yPos, height/3, height/12), 1)
     elif gameMode == "instructions":
         #buttons
@@ -186,10 +197,10 @@ while inPlay:
         #score points
         if ballX <= 0:
             player2Score += 1
-            ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
+            ballX, ballY, ballSpeed, angle = resetGame()
         elif ballX >= (height*4/3)-ballSize:
             player1Score += 1
-            ballX, ballY, ballSpeed, angle = startGame(ballX, ballY, ballSpeed, angle)
+            ballX, ballY, ballSpeed, angle = resetGame()
 
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
@@ -211,7 +222,10 @@ while inPlay:
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
         #draw stuff based on theme assigned by date
-        if (theme == "default") or (theme == "aprfools"):
+        if (theme == "default" or theme == "aprfools") or (ballImage == None or ballPaddle == None):
+            if (ballSpeed == None or ballPaddle == None) and (theme != "default" and theme != "aprfools"):
+                print("Had trouble loading a ball or paddle image.")
+                
             pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
@@ -231,33 +245,33 @@ while inPlay:
         playAgainMessage = comicSans.render("Click anywhere or any  key to return to the main menu", 0, (r, g, b))
         screen.blit(playAgainMessage, (height/4, height*2/3))
     #change colours
-    r+=dr
-    g+=dg
-    b+=db
-    if r>=255 and g>=255:
-        dr=-1
-        dg=0
-        db=0
-    elif r>=255 and b>=255:
-        dr=0
-        dg=0
-        db=-1
-    elif r>=255 and b==0:
-        dr=0
-        dg=1
-        db=0
-    elif g>=255 and b>=255:
-        dr=0
-        dg=-1
-        db=0
-    elif g>=255 and r==0:
-        dr=0
-        dg=0
-        db=1
-    elif b>=255 and g==0:
-        dr=1
-        dg=0
-        db=0
+    r += dr
+    g += dg
+    b += db
+    if r >= 255 and g >= 255:
+        d = -1
+        dg = 0
+        db = 0
+    elif r >= 255 and b >= 255:
+        dr = 0
+        dg = 0
+        db = -1
+    elif r >= 255 and b == 0:
+        dr = 0
+        dg = 1
+        db = 0
+    elif g >= 255 and b >= 255:
+        dr = 0
+        dg = -1
+        db = 0
+    elif g >= 255 and r== 0:
+        dr = 0
+        dg = 0
+        db = 1
+    elif b >= 255 and g == 0:
+        dr = 1
+        dg = 0
+        db = 0
     
     #draw over
     pygame.display.update()
