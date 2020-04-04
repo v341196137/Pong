@@ -205,11 +205,18 @@ while inPlay:
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
             ballDirX = 1
-            angle = (((ballY + ballSize) - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200)
+            angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+                ballDirY = 1
+            else:
+                ballDirY = -1
         elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
-            angle = (((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200)
-
+            angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+                ballDirY = 1
+            else:
+                ballDirY = -1
         #update player positions
         if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
             player1Pos += player1Direction * (height/300)
