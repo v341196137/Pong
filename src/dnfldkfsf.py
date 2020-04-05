@@ -100,6 +100,12 @@ def resetGame():
 
     return newBallX, newBallY, newBallSpeed, newAngle
 
+def fakeLoadScreen(screen, r, g, b):
+    pygame.draw.rect(screen, (r, g, b), (height/2, height/3, height/3, height/20), 1)
+    for i in range(2000):
+        pygame.draw.rect(screen, (r, g, b), (height/2, height/3, height*i/6000, height/20), 0)
+        pygame.display.update()
+
 ########## FUNCTIONS ##########
 
 ########## GAME ##########
@@ -130,6 +136,7 @@ while inPlay:
                         player2Direction = 0
                         player1Score = 0
                         player2Score = 0
+                        fakeLoadScreen(screen, r, g, b)
                         gameMode = "game"
                     elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
                         gameMode = "instructions"
