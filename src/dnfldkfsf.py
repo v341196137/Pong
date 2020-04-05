@@ -23,10 +23,10 @@ screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
 
 ########## INITIALIZATION FUNCTIONS ##########
 def loadImage(imageName):
-    return pygame.image.load("/assets/pictures/"+imageName).convert()
+    return pygame.image.load("./assets/pictures/"+imageName).convert()
 
 def loadTransparentImage(imageName):
-    return pygame.image.load("/assets/pictures/"+imageName).convert_alpha()
+    return pygame.image.load("./assets/pictures/"+imageName).convert_alpha()
 
 def createFont(font, size):
     return pygame.font.SysFont(font, int(size))
@@ -63,6 +63,8 @@ player2Score = 0
 
 ballImage, paddleImage = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
+
+grigorovMode = False
 ###############################
 
 #create the theme
@@ -81,9 +83,12 @@ elif month == 12 and day == 25:
     theme = "christmas"
     ballImage = loadTransparentImage("christmasBall.png")
     paddleImage = loadTransparentImage("christmasPaddle.png")
+elif grigorovMode:
+    theme = "grigorov"
+    ballImage = loadTransparentImage("basketball.png")
+    paddleImage = loadTransparentImage("resistor.png")
 else:
     theme = "default"
-
 ########## FUNCTIONS ##########
 
 # startGame
@@ -116,7 +121,7 @@ inPlay = True
 
 while inPlay:
     #fill screen based on theme
-    if theme == "default" or theme == "joseph" or theme == "halloween":
+    if theme == "default" or theme == "joseph" or theme == "halloween" or theme == "grigorov":
         screen.fill((0, 0, 0))
     elif theme == "aprfools":
         screen.fill((255 - r, 255 - g, 255 -b))
@@ -244,9 +249,9 @@ while inPlay:
             pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
         else:
-            screen.blit(ballImage, (ballX, ballY))
-            screen.blit(paddleImage, (height/15, player1Pos))
-            screen.blit(pygame.transform.flip(paddleImage, True, False), (height*6/5, player2Pos))
+            screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
+            screen.blit(pygame.transform.scale(paddleImage, (height/30, paddleSize)), (height/15, player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (height/30, paddleSize)), (height*6/5, player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/240000
     elif gameMode == "winScreen":
