@@ -64,7 +64,7 @@ player2Score = 0
 ballImage, paddleImage = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
-grigorovMode = False
+grigorovMode = True
 ###############################
 
 #create the theme
@@ -121,12 +121,14 @@ inPlay = True
 
 while inPlay:
     #fill screen based on theme
-    if theme == "default" or theme == "joseph" or theme == "halloween" or theme == "grigorov":
+    if theme == "default" or theme == "joseph" or theme == "halloween":
         screen.fill((0, 0, 0))
     elif theme == "aprfools":
         screen.fill((255 - r, 255 - g, 255 -b))
     elif theme == "christmas":
         screen.fill((200, 230, 255))
+    elif theme == "grigorov":
+        screen.fill((255, 255, 255))
 
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
