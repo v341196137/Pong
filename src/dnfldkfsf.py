@@ -228,9 +228,17 @@ while inPlay:
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
         #screen size adjustment
-        screenSize = comicSans.render("Screen size: "+str(height*4/3)+"x"+str(height), 0, (r, g, b))
+        screenSize = comicSans.render("Screen size:", 0, (r, g, b))
         screen.blit(screenSize, (height/10, height/10))
-        
+        widthMsg = comicSans.render("Width:", 0, (r, g, b))
+        heightMsg = comicSans.render("Height:", 0, (r, g, b))
+        pixels = comicSans.render("px", 0, (r, g, b))
+        pygame.draw.rect(screen, (r, g, b), (height/5, height/5, height/6, height/20), 1)
+        pygame.draw.rect(screen, (r, g, b), (height/5, height/3, height/6, height/20), 1)
+        screen.blit(widthMsg, (height/15, height/5))
+        screen.blit(heightMsg, (height/15, height/3))
+        screen.blit(pixels, (height*2/5, height/5))
+        screen.blit(pixels, (height*2/5, height/3))
     elif gameMode == "credits":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
