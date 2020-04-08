@@ -252,8 +252,8 @@ while inPlay:
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
         else:
             screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
-            screen.blit(pygame.transform.scale(paddleImage, (height/30, paddleSize)), (height/15, player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (height/30, paddleSize)), (height*6/5, player2Pos))
+            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize)), (int(height/15), player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize)), (int(height*6/5), player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/240000
     elif gameMode == "winScreen":
@@ -266,11 +266,12 @@ while inPlay:
         playAgainMessage = comicSans.render("Click anywhere or any  key to return to the main menu", 0, (r, g, b))
         screen.blit(playAgainMessage, (height/4, height*2/3))
     #change colours
+
     r += dr
     g += dg
     b += db
     if r >= 255 and g >= 255:
-        d = -1
+        dr = -1
         dg = 0
         db = 0
     elif r >= 255 and b >= 255:
