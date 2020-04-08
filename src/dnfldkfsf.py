@@ -64,7 +64,7 @@ player2Score = 0
 ballImage, paddleImage = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
-grigorovMode = True
+grigorovMode = False
 ###############################
 
 #create the theme
