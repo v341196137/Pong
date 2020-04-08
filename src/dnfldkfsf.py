@@ -239,6 +239,8 @@ while inPlay:
         #Actual credits
         dueDate = comicSans.render("Due Date: Mr. Grigorov", 0, (r, g, b))
         screen.blit(dueDate, (height/10, height/12))
+        sounds = comicSans.render("Music and sfx: Joseph (and possibly stolen from the Internet)", 0, (r, g, b))
+        screen.blit(sounds, (height/10, height*7/30))
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
