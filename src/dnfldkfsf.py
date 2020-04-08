@@ -71,7 +71,7 @@ ballImage, paddleImage = None, None
 hitSound, pointSound = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
-grigorovMode = True
+grigorovMode = False
 ###############################
 
 #create the theme
