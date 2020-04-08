@@ -17,6 +17,8 @@ DEFAULT_WIDTH = 800
 DEFAULT_HEIGHT = 600
 DEFAULT_PADDLE_SIZE = 100
 DEFAULT_BALL_SIZE = 50
+MIN_HEIGHT = 300
+MAX_HEIGHT = 1080
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -149,12 +151,19 @@ while inPlay:
                         gameMode = "instructions"
                     elif (mouseY >= height*17/30) and (mouseY <= height*13/20):
                         gameMode = "settings"
+                    elif (mouseY >= height*41/60) and (mouseY <= height*23/30):
+                        gameMode = "credits"
         elif gameMode == "instructions":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
                     gameMode = "menu"
         elif gameMode == "settings":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
+                    gameMode = "menu"
+        elif gameMode == "credits":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
@@ -187,8 +196,10 @@ while inPlay:
         screen.blit(instructions, (height*320/600, height*270/600))
         settings = buttonComicSans.render("Settings", 0, (r, g, b))
         screen.blit(settings, (height*340/600, height*340/600))
+        credit = buttonComicSans.render("Credits", 0, (r, g, b))
+        screen.blit(credit, (height*350/600, height*410/600))
         #button outlines
-        for yPos in range(int(height*200/600), int(height*350/600), int(height*70/600)):
+        for yPos in range(int(height*200/600), int(height*420/600), int(height*70/600)):
             pygame.draw.rect(screen, (r, g, b), (height/2, yPos, height/3, height/12), 1)
     elif gameMode == "instructions":
         #buttons
@@ -201,6 +212,18 @@ while inPlay:
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
+        #screen size adjustment
+        screenSize = comicSans.render("Screen size: "+str(height*4/3)+"x"+str(height), 0, (r, g, b))
+        screen.blit(screenSize, (height/10, height/10))
+        
+    elif gameMode == "credits":
+        #back button
+        backButton = comicSans.render("Back", 0, (r, g, b))
+        screen.blit(backButton, (height/120, 0))
+        pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
+        #Actual credits
+        dueDate = comicSans.render("Due Date: Mr. Grigorov", 0, (r, g, b))
+        screen.blit(dueDate, (height/10, height/12))
     elif gameMode == "game":
         #ball movement
         ballX += ballSpeed*ballDirX
