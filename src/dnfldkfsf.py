@@ -10,6 +10,7 @@ import random
 import datetime
 from random import randrange
 
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()  # start the hell
 
 ########## CONSTS ##########
@@ -29,6 +30,11 @@ def loadImage(imageName):
 
 def loadTransparentImage(imageName):
     return pygame.image.load("./assets/pictures/"+imageName).convert_alpha()
+
+def loadSFX(soundEffectName): #load a sfx from the folder
+    sound = pygame.mixer.Sound("./assets/sfx/"+soundEffectName)
+    sound.set_volume(0.5)
+    return sound
 
 def createFont(font, size):
     return pygame.font.SysFont(font, int(size))
@@ -64,6 +70,7 @@ player1Score = 0
 player2Score = 0
 
 ballImage, paddleImage = None, None
+hitSound, pointSound = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
 grigorovMode = False
@@ -113,11 +120,19 @@ def fakeLoadScreen(screen, r, g, b):
         pygame.draw.rect(screen, (r, g, b), (height/2, height/3, height*i/6000, height/20), 0)
         pygame.display.update()
 
+def determineSFX(theme): 
+    # You can use this to determine whawt the sfx should be according to the theme
+    # for now it just returns the default
+    newHitSound = loadSFX("defaultHit1.wav")
+    newPointSound = loadSFX("defaultPoint1.wav")
+    return newHitSound, newPointSound
+
 ########## FUNCTIONS ##########
 
 ########## GAME ##########
 #start the game
 gameMode = "menu"
+hitSound, pointSound = determineSFX(theme)
 ballX, ballY, ballSpeed, angle = resetGame()
 inPlay = True
 
@@ -235,9 +250,11 @@ while inPlay:
         if ballX <= 0:
             player2Score += 1
             ballX, ballY, ballSpeed, angle = resetGame()
+            pointSound.play()
         elif ballX >= (height*4/3)-ballSize:
             player1Score += 1
             ballX, ballY, ballSpeed, angle = resetGame()
+            pointSound.play()
 
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
@@ -247,6 +264,7 @@ while inPlay:
                 ballDirY = 1
             else:
                 ballDirY = -1
+            hitSound.play()
         elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
             angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200))
@@ -254,6 +272,8 @@ while inPlay:
                 ballDirY = 1
             else:
                 ballDirY = -1
+            hitSound.play()
+
         #update player positions
         if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
             player1Pos += player1Direction * (height/300)
