@@ -173,6 +173,9 @@ while inPlay:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
                     gameMode = "menu"
+                elif (mouseX >= height) and (mouseX <= (height*13/10)) and (mouseY >= height*7/8) and (mouseY <= (height*7/8) + (height/15)):
+                    fakeLoadScreen(screen, r, g, b)
+                    gameMode = "game"
         elif gameMode == "settings":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
@@ -221,7 +224,9 @@ while inPlay:
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
-
+        continueButton = comicSans.render("Continue to Game!", 0, (r, g, b))
+        screen.blit(continueButton, (height*121/120, height*7/8))
+        pygame.draw.rect(screen, (r, g, b), (height, height*7/8, height*3/10, height/15), 1)
     elif gameMode == "settings":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
