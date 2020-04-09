@@ -58,16 +58,21 @@ player2Direction = 0
 
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
+
 r = 255
 g = 0
 b = 0
 dr = 0
 dg = 1
 db = 0
+
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
 
 player1Score = 0
 player2Score = 0
+
+soundEffects = True
+playMusic = True
 
 ballImage, paddleImage = None, None
 hitSound, pointSound = None, None
@@ -181,6 +186,11 @@ while inPlay:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
                     gameMode = "menu"
+                elif (mouseX >= height/5) and (mouseX <= (height/5) + (height/7)):
+                    if (mouseY >= height*3/5) and (mouseY <= (height*3/5) + (height/20)):
+                        soundEffects = not soundEffects
+                    elif (mouseY >= height*7/10) and (mouseY <= (height*7/10) + (height/20)):
+                        playMusic = not playMusic
         elif gameMode == "credits":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
@@ -232,7 +242,7 @@ while inPlay:
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
-        #screen size adjustment
+        #screen size adjustment (not working)
         screenSize = comicSans.render("Screen size:", 0, (r, g, b))
         screen.blit(screenSize, (height/10, height/10))
         widthMsg = comicSans.render("Width:", 0, (r, g, b))
@@ -244,6 +254,24 @@ while inPlay:
         screen.blit(heightMsg, (height/15, height/3))
         screen.blit(pixels, (height*2/5, height/5))
         screen.blit(pixels, (height*2/5, height/3))
+        #toggles for sfx and music
+        sfxText = comicSans.render("SFX:", 0, (r, g, b))
+        screen.blit(sfxText, (height/15, height*3/5))
+        musicText = comicSans.render("Music:", 0, (r, g, b))
+        screen.blit(musicText, (height/15, height*7/10))
+        toggle = comicSans.render("ON OFF", 0, (r, g, b))
+        screen.blit(toggle, (height/5, height*3/5))
+        pygame.draw.rect(screen, (r, g, b), (height/5, height*3/5, height/7, height/20), 1)
+        screen.blit(toggle, (height/5, height*7/10))
+        pygame.draw.rect(screen, (r, g, b), (height/5, height*7/10, height/7, height/20), 1)
+        if soundEffects:
+            pygame.draw.rect(screen, (r, g, b), (height*13/50, height*3/5, height/12, height/20), 0)
+        else:
+            pygame.draw.rect(screen, (r, g, b), (height/5, height*3/5, height/15, height/20), 0)
+        if playMusic:
+            pygame.draw.rect(screen, (r, g, b), (height*13/50, height*7/10, height/12, height/20), 0)
+        else:
+            pygame.draw.rect(screen, (r, g, b), (height/5, height*7/10, height/15, height/20), 0)
     elif gameMode == "credits":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
@@ -265,11 +293,13 @@ while inPlay:
         if ballX <= 0:
             player2Score += 1
             ballX, ballY, ballSpeed, angle = resetGame()
-            pointSound.play()
+            if soundEffects:
+                pointSound.play()
         elif ballX >= (height*4/3)-ballSize:
             player1Score += 1
             ballX, ballY, ballSpeed, angle = resetGame()
-            pointSound.play()
+            if soundEffects:
+                pointSound.play()
 
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
@@ -279,7 +309,8 @@ while inPlay:
                 ballDirY = 1
             else:
                 ballDirY = -1
-            hitSound.play()
+            if soundEffects:
+                hitSound.play()
         elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
             ballDirX = -1
             angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200))
@@ -287,7 +318,8 @@ while inPlay:
                 ballDirY = 1
             else:
                 ballDirY = -1
-            hitSound.play()
+            if soundEffects:
+                hitSound.play()
 
         #update player positions
         if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
