@@ -61,6 +61,9 @@ player2Direction = 0
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
 
+cheatUsed = False
+cheatInEffect = False
+
 r = 255
 g = 0
 b = 0
@@ -169,6 +172,8 @@ while inPlay:
                         player2Direction = 0
                         player1Score = 0
                         player2Score = 0
+                        cheatUsed = False
+                        cheatInEffect = False
                         fakeLoadScreen(screen, r, g, b)
                         gameMode = "game"
                     elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
@@ -210,6 +215,9 @@ while inPlay:
                     player2Direction = -1
                 elif event.key == pygame.K_k:
                     player2Direction = 1
+                elif (event.key == pygame.K_q) and (not cheatUsed):
+                    cheatUsed = True
+                    cheatInEffect = True
             elif event.type == pygame.KEYUP:
                 if (event.key == pygame.K_w) or (event.key == pygame.K_s):
                     player1Direction = 0
@@ -294,6 +302,9 @@ while inPlay:
         sounds = comicSans.render("Music and sfx: Joseph (and possibly stolen from the Internet)", 0, (r, g, b))
         screen.blit(sounds, (height/10, (height*7/30) + 30))
     elif gameMode == "game":
+        #cheats are fun
+        if cheatInEffect:
+            paddleSize2 = paddleSize1*4/5
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -311,6 +322,9 @@ while inPlay:
             ballX, ballY, ballSpeed, angle = resetGame()
             if soundEffects:
                 pointSound.play()
+            #reset the cheat after scoring a point
+            cheatInEffect = False
+            paddleSize2 = paddleSize1
 
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize1):
