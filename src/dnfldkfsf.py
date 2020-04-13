@@ -8,6 +8,7 @@ import pygame
 import sys
 import random
 import datetime
+import time
 from random import randrange
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -21,6 +22,8 @@ DEFAULT_BALL_SIZE = 50
 MIN_HEIGHT = 300
 MAX_HEIGHT = 1080
 BALL_SPEED_INCREASE = 240000
+ONE_SECOND = 1000
+THREE_SECONDS = 3000
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -74,6 +77,8 @@ db = 0
 rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "First to 7 wins the game", "Good luck!"]
 
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
+lastTime = 0
+curTime = 0
 
 player1Score = 0
 player2Score = 0
@@ -218,6 +223,9 @@ while inPlay:
                 elif (event.key == pygame.K_q) and (not cheatUsed):
                     cheatUsed = True
                     cheatInEffect = True
+                    if theme == "christmas":
+                        lastTime = time.time()*ONE_SECOND
+                        curTime = time.time()*ONE_SECOND
             elif event.type == pygame.KEYUP:
                 if (event.key == pygame.K_w) or (event.key == pygame.K_s):
                     player1Direction = 0
@@ -304,7 +312,20 @@ while inPlay:
     elif gameMode == "game":
         #cheats are fun
         if cheatInEffect:
-            paddleSize2 = paddleSize1*4/5
+            if theme == "joseph":
+                ballSize = height/24
+            elif theme == "halloween":
+                ballX += (ballSpeed*ballDirX)*2
+            elif theme == "christmas":
+                ballX -= ballSpeed*ballDirX
+                ballY -= angle*ballDirY
+                curTime = time.time()*1000
+                if curTime - lastTime > THREE_SECONDS:
+                    cheatInEffect = False
+            elif theme == "grigorov":
+                paddleSize1 = paddleSize2*6/5
+            else:
+                paddleSize2 = paddleSize1*4/5
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -324,7 +345,12 @@ while inPlay:
                 pointSound.play()
             #reset the cheat after scoring a point
             cheatInEffect = False
-            paddleSize2 = paddleSize1
+            if theme == "joseph":
+                ballSize = height/12
+            elif theme == "grigorov":
+                paddleSize1 = paddleSize2
+            else:
+                paddleSize2 = paddleSize1
 
         #recieve ball
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize1):
@@ -361,8 +387,8 @@ while inPlay:
         if (theme == "default" or theme == "aprfools") or (ballImage == None or paddleImage == None):
             if (ballImage == None or paddleImage == None) and (theme != "default" and theme != "aprfools"):
                 print("Had trouble loading a ball or paddle image.")
-                
-            pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
+            if not((theme == "aprfools") and (cheatInEffect)):
+                pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
             pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize1), 1)
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize2), 1)
         else:
