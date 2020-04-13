@@ -20,6 +20,7 @@ DEFAULT_PADDLE_SIZE = 100
 DEFAULT_BALL_SIZE = 50
 MIN_HEIGHT = 300
 MAX_HEIGHT = 1080
+BALL_SPEED_INCREASE = 240000
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -65,6 +66,8 @@ b = 0
 dr = 0
 dg = 1
 db = 0
+
+rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "First to 7 wins the game", "Good luck!"]
 
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
 
@@ -237,6 +240,11 @@ while inPlay:
         continueButton = comicSans.render("Continue to Game!", 0, (r, g, b))
         screen.blit(continueButton, (height*121/120, height*7/8))
         pygame.draw.rect(screen, (r, g, b), (height, height*7/8, height*3/10, height/15), 1)
+        #text for the actual instructions
+        for i in range(len(rules)):
+            instructionText = comicSans.render(rules[i], 0, (r, g, b))
+            screen.blit(instructionText, (height/60, (height*i/20) + (height/10)))
+        
     elif gameMode == "settings":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
@@ -345,7 +353,7 @@ while inPlay:
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize)), (int(height/15), player1Pos))
             screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize)), (int(height*6/5), player2Pos))
         #slow increase in ball speed
-        ballSpeed += float(height)/240000
+        ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
         if player1Score == 7:
             winMessage = comicSans.render("Player 1 wins!", 0, (r, g, b))
