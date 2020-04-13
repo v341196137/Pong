@@ -8,6 +8,7 @@ import pygame
 import sys
 import random
 import datetime
+import time
 from random import randrange
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -23,6 +24,9 @@ MAX_HEIGHT = 1080
 BALL_SPEED_INCREASE = 240000
 
 BLACK = (0, 0, 0)
+
+ONE_SECOND = 1000
+THREE_SECONDS = 3000
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -54,16 +58,20 @@ titleComicSans = createFont("Comic Sans MS", height/10)
 
 pauseBackground = loadTransparentImage("pauseScreenBack.png")
 
-paddleSize = DEFAULT_PADDLE_SIZE
+paddleSize1 = DEFAULT_PADDLE_SIZE
+paddleSize2 = DEFAULT_PADDLE_SIZE
 ballSize = DEFAULT_BALL_SIZE
 
-player1Pos = (height/2) - (paddleSize/2)
-player2Pos = (height/2) - (paddleSize/2)
+player1Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
+player2Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
 player1Direction = 0
 player2Direction = 0
 
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
+
+cheatUsed = False
+cheatInEffect = False
 
 r = 255
 g = 0
@@ -75,6 +83,8 @@ db = 0
 rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "First to 7 wins the game", "Good luck!"]
 
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
+lastTime = 0
+curTime = 0
 
 player1Score = 0
 player2Score = 0
@@ -185,6 +195,8 @@ while inPlay:
                         player2Direction = 0
                         player1Score = 0
                         player2Score = 0
+                        cheatUsed = False
+                        cheatInEffect = False
                         fakeLoadScreen(screen, r, g, b)
                         gameMode = "game"
                     elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
@@ -228,6 +240,12 @@ while inPlay:
                     player2Direction = 1
                 elif event.key == pygame.K_ESCAPE:
                     gameMode = "pause"
+                elif (event.key == pygame.K_q) and (not cheatUsed):
+                    cheatUsed = True
+                    cheatInEffect = True
+                    if theme == "christmas":
+                        lastTime = time.time()*ONE_SECOND
+                        curTime = time.time()*ONE_SECOND
             elif event.type == pygame.KEYUP:
                 if (event.key == pygame.K_w) or (event.key == pygame.K_s):
                     player1Direction = 0
@@ -319,6 +337,22 @@ while inPlay:
         sounds = comicSans.render("Music and sfx: Joseph (and possibly stolen from the Internet)", 0, (r, g, b))
         screen.blit(sounds, (height/10, (height*7/30) + 30))
     elif gameMode == "game":
+        #cheats are fun
+        if cheatInEffect:
+            if theme == "joseph":
+                ballSize = height/24
+            elif theme == "halloween":
+                ballX += (ballSpeed*ballDirX)*2
+            elif theme == "christmas":
+                ballX -= ballSpeed*ballDirX
+                ballY -= angle*ballDirY
+                curTime = time.time()*1000
+                if curTime - lastTime > THREE_SECONDS:
+                    cheatInEffect = False
+            elif theme == "grigorov":
+                paddleSize1 = paddleSize2*6/5
+            else:
+                paddleSize2 = paddleSize1*4/5
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -336,21 +370,29 @@ while inPlay:
             ballX, ballY, ballSpeed, angle = resetGame()
             if soundEffects:
                 pointSound.play()
+            #reset the cheat after scoring a point
+            cheatInEffect = False
+            if theme == "joseph":
+                ballSize = height/12
+            elif theme == "grigorov":
+                paddleSize1 = paddleSize2
+            else:
+                paddleSize2 = paddleSize1
 
         #recieve ball
-        if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
+        if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize1):
             ballDirX = 1
-            angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200))
-            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+            angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize1/2)))/paddleSize1)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize1/2)) > 0:
                 ballDirY = 1
             else:
                 ballDirY = -1
             if soundEffects:
                 hitSound.play()
-        elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
+        elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize2):
             ballDirX = -1
-            angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200))
-            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+            angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize2/2)))/paddleSize2)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize2/2)) > 0:
                 ballDirY = 1
             else:
                 ballDirY = -1
@@ -358,13 +400,13 @@ while inPlay:
                 hitSound.play()
 
         #update player positions
-        if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
+        if (player1Pos > 0 and player1Pos < height - paddleSize1) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize1 and player1Direction == -1):
             player1Pos += player1Direction * (height/300)
-        if (player2Pos > 0 and player2Pos < height - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize and player2Direction == -1):
+        if (player2Pos > 0 and player2Pos < height - paddleSize2) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize2 and player2Direction == -1):
             player2Pos += player2Direction * (height/300)
 
         #score check
-        score = comicSans.render("Score\n" + str(player1Score) + ":" + str(player2Score), 0, (r, g, b))
+        score = comicSans.render("Score: " + str(player1Score) + "-" + str(player2Score), 0, (r, g, b))
         screen. blit(score, (height*35/60, 0))
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
@@ -372,14 +414,14 @@ while inPlay:
         if (theme == "default" or theme == "aprfools") or (ballImage == None or paddleImage == None):
             if (ballImage == None or paddleImage == None) and (theme != "default" and theme != "aprfools"):
                 print("Had trouble loading a ball or paddle image.")
-                
-            pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
+            if not((theme == "aprfools") and (cheatInEffect)):
+                pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
+            pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize1), 1)
+            pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize2), 1)
         else:
             screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
-            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize)), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
