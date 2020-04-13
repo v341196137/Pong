@@ -49,11 +49,12 @@ comicSans = createFont("Comic Sans MS", height/30)
 buttonComicSans = createFont("Comic Sans MS", height/20)
 titleComicSans = createFont("Comic Sans MS", height/10)
 
-paddleSize = DEFAULT_PADDLE_SIZE
+paddleSize1 = DEFAULT_PADDLE_SIZE
+paddleSize2 = DEFAULT_PADDLE_SIZE
 ballSize = DEFAULT_BALL_SIZE
 
-player1Pos = (height/2) - (paddleSize/2)
-player2Pos = (height/2) - (paddleSize/2)
+player1Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
+player2Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
 player1Direction = 0
 player2Direction = 0
 
@@ -310,19 +311,19 @@ while inPlay:
                 pointSound.play()
 
         #recieve ball
-        if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize):
+        if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize1):
             ballDirX = 1
-            angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize/2)))/paddleSize)*(height/200))
-            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+            angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize1/2)))/paddleSize1)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize1/2)) > 0:
                 ballDirY = 1
             else:
                 ballDirY = -1
             if soundEffects:
                 hitSound.play()
-        elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize):
+        elif (abs((height*6/5) - ballSize - ballX <= ballSpeed)) and (ballY + ballSize >= player2Pos) and (ballY <= player2Pos + paddleSize2):
             ballDirX = -1
-            angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize/2)))/paddleSize)*(height/200))
-            if (ballY + ballSize) - (player1Pos + (paddleSize/2)) > 0:
+            angle = abs((((ballY + ballSize)- (player2Pos + (paddleSize2/2)))/paddleSize2)*(height/200))
+            if (ballY + ballSize) - (player1Pos + (paddleSize2/2)) > 0:
                 ballDirY = 1
             else:
                 ballDirY = -1
@@ -330,13 +331,13 @@ while inPlay:
                 hitSound.play()
 
         #update player positions
-        if (player1Pos > 0 and player1Pos < height - paddleSize) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize and player1Direction == -1):
+        if (player1Pos > 0 and player1Pos < height - paddleSize1) or (player1Pos <= 0 and player1Direction == 1) or (player1Pos >= height - paddleSize1 and player1Direction == -1):
             player1Pos += player1Direction * (height/300)
-        if (player2Pos > 0 and player2Pos < height - paddleSize) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize and player2Direction == -1):
+        if (player2Pos > 0 and player2Pos < height - paddleSize2) or (player2Pos <= 0 and player2Direction == 1) or (player2Pos >= height - paddleSize2 and player2Direction == -1):
             player2Pos += player2Direction * (height/300)
 
         #score check
-        score = comicSans.render("Score\n" + str(player1Score) + ":" + str(player2Score), 0, (r, g, b))
+        score = comicSans.render("Score: " + str(player1Score) + "-" + str(player2Score), 0, (r, g, b))
         screen. blit(score, (height*35/60, 0))
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
@@ -346,12 +347,12 @@ while inPlay:
                 print("Had trouble loading a ball or paddle image.")
                 
             pygame.draw.ellipse(screen, (r, g, b), (ballX, ballY, ballSize, ballSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize), 1)
-            pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize), 1)
+            pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize1), 1)
+            pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize2), 1)
         else:
             screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
-            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize)), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
