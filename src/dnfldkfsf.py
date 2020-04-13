@@ -21,6 +21,8 @@ DEFAULT_BALL_SIZE = 50
 MIN_HEIGHT = 300
 MAX_HEIGHT = 1080
 BALL_SPEED_INCREASE = 240000
+
+BLACK = (0, 0, 0)
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -44,10 +46,13 @@ def createFont(font, size):
 ########## VARIABLES ##########
 
 height = DEFAULT_HEIGHT
+width = DEFAULT_WIDTH
 
 comicSans = createFont("Comic Sans MS", height/30)
 buttonComicSans = createFont("Comic Sans MS", height/20)
 titleComicSans = createFont("Comic Sans MS", height/10)
+
+pauseBackground = loadTransparentImage("pauseScreenBack.png")
 
 paddleSize = DEFAULT_PADDLE_SIZE
 ballSize = DEFAULT_BALL_SIZE
@@ -135,6 +140,18 @@ def determineSFX(theme):
     newPointSound = loadSFX("defaultPoint1.wav")
     return newHitSound, newPointSound
 
+### thanks Despongoncito 3 and Kevin for this code
+def drawCenteredText(x, y, text, font, colour):
+    textSize = font.size(text)
+    renderedText = font.render(text, 1, colour)
+    textX = x-textSize[0]/2
+    textY = y-textSize[1]/2
+    return renderedText, (textX, textY)
+###
+
+def isInsideButton(button):
+    return button.collidepoint(pygame.mouse.get_pos())
+
 ########## FUNCTIONS ##########
 
 ########## GAME ##########
@@ -209,6 +226,8 @@ while inPlay:
                     player2Direction = -1
                 elif event.key == pygame.K_k:
                     player2Direction = 1
+                elif event.key == pygame.K_ESCAPE:
+                    gameMode = "pause"
             elif event.type == pygame.KEYUP:
                 if (event.key == pygame.K_w) or (event.key == pygame.K_s):
                     player1Direction = 0
@@ -216,6 +235,12 @@ while inPlay:
                     player2Direction = 0
         elif gameMode == "winScreen":
             gameMode = "menu"
+        elif gameMode == "pause":
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gameMode = "menu"
+                elif event.key == pygame.K_RETURN:
+                    gameMode = "game"
 
     if gameMode == "menu":
         #text
@@ -280,13 +305,14 @@ while inPlay:
             pygame.draw.rect(screen, (r, g, b), (height*13/50, height*7/10, height/12, height/20), 0)
         else:
             pygame.draw.rect(screen, (r, g, b), (height/5, height*7/10, height/15, height/20), 0)
+
     elif gameMode == "credits":
         #back button
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
         #Actual credits
-        dueDate = comicSans.render("Due Date: Mr. Grigorov", 0, (r, g, b))
+        dueDate = comicSans.render( "Due Date: Mr. Grigorov", 0, (r, g, b))
         screen.blit(dueDate, (height/10, height/12))
         programming = comicSans.render("Basically all the code: Vivian", 0, (r, g, b))
         screen.blit(programming, (height/10, height*7/30))
@@ -365,6 +391,15 @@ while inPlay:
             screen.blit(winMessage, (height*13/24, height*9/20))
         playAgainMessage = comicSans.render("Click anywhere or any  key to return to the main menu", 0, (r, g, b))
         screen.blit(playAgainMessage, (height/4, height*2/3))
+    elif gameMode == "pause":
+        screen.blit(pauseBackground, (0, 0))
+        pauseText, pauseCoords = drawCenteredText(width/2, 50, "PAUSED", titleComicSans, BLACK)
+        screen.blit(pauseText, pauseCoords)
+
+        resumeText, resumeCoords = drawCenteredText(width/2, 150, "Press Enter to return", comicSans, BLACK)
+        screen.blit(resumeText, resumeCoords)
+        escapeText, escapeCoords = drawCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, BLACK)
+        screen.blit(escapeText, escapeCoords)
     #change colours
 
     r += dr
