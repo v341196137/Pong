@@ -92,7 +92,7 @@ player2Score = 0
 soundEffects = True
 playMusic = True
 
-ballImage, paddleImage = None, None
+ballImage, paddleImage, iceImage = None, None, None
 hitSound, pointSound = None, None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
@@ -115,6 +115,7 @@ elif month == 12 and day == 25:
     theme = "christmas"
     ballImage = loadTransparentImage("christmasBall.png")
     paddleImage = loadTransparentImage("christmasPaddle.png")
+    iceImage = loadTransparentImage("ice.png")
 elif grigorovMode:
     theme = "grigorov"
     ballImage = loadTransparentImage("basketball.png")
@@ -419,7 +420,10 @@ while inPlay:
             pygame.draw.rect(screen, (r, g, b), (height/15, player1Pos, height/30, paddleSize1), 1)
             pygame.draw.rect(screen, (r, g, b), (height*6/5, player2Pos, height/30, paddleSize2), 1)
         else:
-            screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
+            if (theme == "christmas") and (cheatInEffect):
+                screen.blit(pygame.transform.scale(iceImage, (ballSize, ballSize)), (ballX, ballY))
+            else:
+                screen.blit(pygame.transform.scale(ballImage, (ballSize, ballSize)), (ballX, ballY))
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
             screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
         #slow increase in ball speed
