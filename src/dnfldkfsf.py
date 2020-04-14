@@ -57,6 +57,7 @@ buttonComicSans = createFont("Comic Sans MS", height/20)
 titleComicSans = createFont("Comic Sans MS", height/10)
 
 pauseBackground = loadTransparentImage("pauseScreenBack.png")
+gameLogo = loadTransparentImage("gameLogo.png")
 
 paddleSize1 = DEFAULT_PADDLE_SIZE
 paddleSize2 = DEFAULT_PADDLE_SIZE
@@ -98,6 +99,9 @@ bgMusic = None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
 grigorovMode = False
+
+pygame.display.set_caption("Pong")
+pygame.display.set_icon(gameLogo)
 ###############################
 
 #create the theme
