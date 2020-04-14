@@ -80,7 +80,7 @@ dr = 0
 dg = 1
 db = 0
 
-rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "First to 7 wins the game", "Good luck!"]
+rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "Press the escape key in game to pause game", "First to 7 wins the game", "Good luck!"]
 
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
 lastTime = 0
