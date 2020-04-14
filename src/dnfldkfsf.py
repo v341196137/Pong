@@ -27,6 +27,9 @@ BLACK = (0, 0, 0)
 
 ONE_SECOND = 1000
 THREE_SECONDS = 3000
+
+SLIDER_LENGTH = 200
+SLIDER_HEIGHT = 2
 ############################
 
 screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
@@ -237,7 +240,7 @@ while inPlay:
                     drawFakeLoadScreen(screen, r, g, b)
                     gameMode = "game"
         elif gameMode == "settings":
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if (event.type == pygame.MOUSEBUTTONDOWN):
                 mouseX, mouseY = pygame.mouse.get_pos()
                 if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
                     gameMode = "menu"
@@ -246,6 +249,18 @@ while inPlay:
                         soundEffects = not soundEffects
                     elif (mouseY >= height*7/10) and (mouseY <= (height*7/10) + (height/20)):
                         playMusic = not playMusic
+                elif (mouseX >= height/10) and (mouseX <= (height/10) + (SLIDER_LENGTH)) and (mouseY >= (height/3) - (SLIDER_HEIGHT*5)) and (mouseY <= (height/3) + (SLIDER_HEIGHT*5)):
+                    height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
+                    screen = pygame.display.set_mode((height*4/3, height))
+                    comicSans = createFont("Comic Sans MS", height/30)
+                    buttonComicSans = createFont("Comic Sans MS", height/20)
+                    titleComicSans = createFont("Comic Sans MS", height/10)
+                    paddleSize1 = height/6
+                    paddleSize2 = height/6
+                    ballSize = height/12
+                    player1Pos = (height/2) - (paddleSize1/2)
+                    player2Pos = (height/2) - (paddleSize2/2)
+
         elif gameMode == "credits":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouseX, mouseY = pygame.mouse.get_pos()
@@ -316,18 +331,13 @@ while inPlay:
         backButton = comicSans.render("Back", 0, (r, g, b))
         screen.blit(backButton, (height/120, 0))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
-        #screen size adjustment (not working)
+        #screen size adjustment
         screenSize = comicSans.render("Screen size:", 0, (r, g, b))
         screen.blit(screenSize, (height/10, height/10))
-        widthMsg = comicSans.render("Width:", 0, (r, g, b))
-        heightMsg = comicSans.render("Height:", 0, (r, g, b))
-        pixels = comicSans.render("px", 0, (r, g, b))
-        pygame.draw.rect(screen, (r, g, b), (height/5, height/5, height/6, height/20), 1)
-        pygame.draw.rect(screen, (r, g, b), (height/5, height/3, height/6, height/20), 1)
-        screen.blit(widthMsg, (height/15, height/5))
-        screen.blit(heightMsg, (height/15, height/3))
-        screen.blit(pixels, (height*2/5, height/5))
-        screen.blit(pixels, (height*2/5, height/3))
+        curScreenSize = comicSans.render(str(height*4/3)+" X "+str(height), 0, (r, g, b))
+        screen.blit(curScreenSize, (height/10, height/5))
+        pygame.draw.rect(screen, (r, g, b), (height/10, height/3, SLIDER_LENGTH, SLIDER_HEIGHT), 0)
+        pygame.draw.rect(screen, (r, g, b), ((height/10) + ((height - MIN_HEIGHT)*SLIDER_LENGTH/(MAX_HEIGHT - MIN_HEIGHT)), height/3 - (SLIDER_HEIGHT*5), SLIDER_HEIGHT*5, SLIDER_HEIGHT*10), 0)
         #toggles for sfx and music
         sfxText = comicSans.render("SFX:", 0, (r, g, b))
         screen.blit(sfxText, (height/15, height*3/5))
