@@ -84,7 +84,9 @@ dr = 0
 dg = 1
 db = 0
 
-rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", "Press the escape key in game to pause game", "First to 7 wins the game", "Good luck!"]
+rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and down", 
+        "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", 
+        "Press the escape key in game to pause game", "First to 7 wins the game", "Good luck!"]
 
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
 lastTime = 0
@@ -170,7 +172,7 @@ def determineSFX(theme):
     return newHitSound, newPointSound
 
 ### thanks Despongoncito 3 and Kevin for this code
-def drawCenteredText(x, y, text, font, colour):
+def generateCenteredText(x, y, text, font, colour):
     textSize = font.size(text)
     renderedText = font.render(text, 1, colour)
     textX = x-textSize[0]/2
@@ -178,8 +180,49 @@ def drawCenteredText(x, y, text, font, colour):
     return renderedText, (textX, textY)
 ###
 
-def isInsideButton(button):
-    return button.collidepoint(pygame.mouse.get_pos())
+def generateText(x, y, text, font, colour):
+    #make drawing precise text neater and nicer
+    return font.render(text, 1, colour), (x, y)
+
+def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
+    #those all have to be tuples, determines if the mouse is within a range of points.
+    if ((mousePos[0] >= topLeftPoint[0]) and (mousePos[0] <= bottomRightPoint[0]) 
+    and (mousePos[1] >= topLeftPoint[1]) and (mousePos[1] <= bottomRightPoint[1])):
+        return True
+    
+    return False
+
+def cycleRGB(dr, dg, db, r, g, b):
+    r += dr
+    g += dg
+    b += db
+    if r >= 255 and g >= 255:
+        dr = -1
+        dg = 0
+        db = 0
+    elif r >= 255 and b >= 255:
+        dr = 0
+        dg = 0
+        db = -1
+    elif r >= 255 and b == 0:
+        dr = 0
+        dg = 1
+        db = 0
+    elif g >= 255 and b >= 255:
+        dr = 0
+        dg = -1
+        db = 0
+    elif g >= 255 and r== 0:
+        dr = 0
+        dg = 0
+        db = 1
+    elif b >= 255 and g == 0:
+        dr = 1
+        dg = 0
+        db = 0
+
+    return dr, dg, db, r, g, b
+
 
 def loadMusic(music):
     pygame.mixer.music.load("assets/music/" + music)
@@ -212,53 +255,56 @@ while inPlay:
 
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
+        if gameMode != "game":
+            mouse = pygame.mouse.get_pos()
+            mouseX, mouseY = mouse
+
         if event.type == pygame.QUIT:
             inPlay = False
         if gameMode == "menu":
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= height/2) and (mouseX <= height*5/6):
-                    if (mouseY >= height/3) and (mouseY <= height*5/12):
-                        player1Direction = 0
-                        player2Direction = 0
-                        player1Score = 0
-                        player2Score = 0
-                        cheatUsed = False
-                        cheatInEffect = False
-                        drawFakeLoadScreen(screen, r, g, b)
-                        gameMode = "game"
-                    elif (mouseY >= height*9/20) and (mouseY <= height*8/15):
-                        gameMode = "instructions"
-                    elif (mouseY >= height*17/30) and (mouseY <= height*13/20):
-                        gameMode = "settings"
-                    elif (mouseY >= height*41/60) and (mouseY <= height*23/30):
-                        gameMode = "credits"
-        elif gameMode == "instructions":
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
-                    gameMode = "menu"
-                elif (mouseX >= height) and (mouseX <= (height*13/10)) and (mouseY >= height*7/8) and (mouseY <= (height*7/8) + (height/15)):
+                if mouseIsIn(mouse, (height/2, height/3), 
+                                    (height*5/6, height*5/12)):
+                    player1Direction, player2Direction = 0, 0
+                    player1Score, player2Score = 0, 0
+                    cheatUsed, cheatInEffect = False, False
                     drawFakeLoadScreen(screen, r, g, b)
                     gameMode = "game"
+                elif mouseIsIn(mouse, (height/2, height*9/20), 
+                                      (height*5/6, height*8/15)):
+                    gameMode = "instructions"
+                elif mouseIsIn(mouse, (height/2, height*17/30), 
+                                      (height*5/6, height*13/20)):
+                    gameMode = "settings"
+                elif mouseIsIn(mouse, (height/2,height*41/60), 
+                                      (height*5/6, height*23/30)):
+                    gameMode = "credits"
+
+        elif gameMode == "instructions":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if mouseIsIn(mouse, (0, 0), (height/10, height/15)):
+                    gameMode = "menu"
+                elif mouseIsIn(mouse, (height, height*7/8), (height*13/10, (height*7/8) + (height/15))):
+                    drawFakeLoadScreen(screen, r, g, b)
+                    gameMode = "game"
+
         elif gameMode == "settings":
             if (event.type == pygame.MOUSEBUTTONDOWN):
-                mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
+                if mouseIsIn(mouse, (0, 0), (height/10, height/15)):
                     gameMode = "menu"
-                elif (mouseX >= height/5) and (mouseX <= (height/5) + (height/7)):
-                    if (mouseY >= height*3/5) and (mouseY <= (height*3/5) + (height/20)):
-                        soundEffects = not soundEffects
-                    elif (mouseY >= height*7/10) and (mouseY <= (height*7/10) + (height/20)):
-                        playMusic = not playMusic
+                elif mouseIsIn(mouse, (height/5, height*3/5),
+                                      (height/5 + height/7, height*3/5 + height/20)):
+                    soundEffects = not soundEffects
+                elif mouseIsIn(mouse, (height/5, height*7/10),
+                                      (height/5 + height/7, height*7/10 + height/20)):
+                    playMusic = not playMusic
                 elif (mouseX >= height/10) and (mouseX <= (height/10) + (SLIDER_LENGTH)) and (mouseY >= (height/3) - (SLIDER_HEIGHT*5)) and (mouseY <= (height/3) + (SLIDER_HEIGHT*5)):
                     onSlider = True
+
             elif (onSlider) and ((event.type == pygame.MOUSEMOTION) or(event.type == pygame.MOUSEBUTTONUP)):
-                print event.type == pygame.MOUSEMOTION
                 mouseX, mouseY = pygame.mouse.get_pos()
-                print mouseX
                 height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
-                screen = pygame.display.set_mode((height*4/3, height))
+                screen = pygame.display.set_mode((int(height*4/3), int(height)))
                 comicSans = createFont("Comic Sans MS", height/30)
                 buttonComicSans = createFont("Comic Sans MS", height/20)
                 titleComicSans = createFont("Comic Sans MS", height/10)
@@ -272,9 +318,9 @@ while inPlay:
 
         elif gameMode == "credits":
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouseX, mouseY = pygame.mouse.get_pos()
-                if (mouseX >= 0) and (mouseX <= height/10) and (mouseY >= 0) and (mouseY <= height/15):
+                if mouseIsIn(mouse, (0, 0), (height/10, height/15)):
                     gameMode = "menu"
+
         elif gameMode == "game":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:
@@ -309,54 +355,48 @@ while inPlay:
 
     if gameMode == "menu":
         #text
-        title = titleComicSans.render("Pong!", 0, (r, g, b))
-        screen.blit(title, (height*13/24, height/30))
-        play = buttonComicSans.render("Play!", 0, (r, g, b))
-        screen.blit(play, (height*3/5, height/3))
-        instructions = buttonComicSans.render("How to play", 0, (r, g, b))
-        screen.blit(instructions, (height*320/600, height*270/600))
-        settings = buttonComicSans.render("Settings", 0, (r, g, b))
-        screen.blit(settings, (height*340/600, height*340/600))
-        credit = buttonComicSans.render("Credits", 0, (r, g, b))
-        screen.blit(credit, (height*350/600, height*410/600))
+        screen.blit(*generateCenteredText(width/2, 50, "Pong!", titleComicSans, (r, g, b)))
+        screen.blit(*generateText(height*3/5    , height/3      , "Play!", buttonComicSans, (r, g, b)))
+        screen.blit(*generateText(height*320/600, height*270/600, "How to play", buttonComicSans, (r, g, b)))
+        screen.blit(*generateText(height*340/600, height*340/600, "Settings", buttonComicSans, (r, g, b)))
+        screen.blit(*generateText(height*350/600, height*410/600, "Credits", buttonComicSans, (r, g, b)))
         #button outlines
         for yPos in range(int(height*200/600), int(height*420/600), int(height*70/600)):
             pygame.draw.rect(screen, (r, g, b), (height/2, yPos, height/3, height/12), 1)
+
     elif gameMode == "instructions":
-        #buttons
-        backButton = comicSans.render("Back", 0, (r, g, b))
-        screen.blit(backButton, (height/120, 0))
+        #draw buttons
+        screen.blit(*generateText(height/120, 0, "Back", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
-        continueButton = comicSans.render("Continue to Game!", 0, (r, g, b))
-        screen.blit(continueButton, (height*121/120, height*7/8))
+        screen.blit(*generateText(height*121/120, height*7/8, "Continue to Game!", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (height, height*7/8, height*3/10, height/15), 1)
+
         #text for the actual instructions
         for i in range(len(rules)):
-            instructionText = comicSans.render(rules[i], 0, (r, g, b))
-            screen.blit(instructionText, (height/60, (height*i/20) + (height/10)))
+            screen.blit(*generateText(height/60, (height*i/20) + (height/10), rules[i], comicSans, (r, g, b)))
         
     elif gameMode == "settings":
         #back button
-        backButton = comicSans.render("Back", 0, (r, g, b))
-        screen.blit(backButton, (height/120, 0))
+        screen.blit(*generateText(height/120, 0, "Back", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
+
         #screen size adjustment
-        screenSize = comicSans.render("Screen size:", 0, (r, g, b))
-        screen.blit(screenSize, (height/10, height/10))
+        screen.blit(*generateText(height/10, height/10, "Screen size:", comicSans, (r, g, b)))
         curScreenSize = comicSans.render(str(height*4/3)+" X "+str(height), 0, (r, g, b))
         screen.blit(curScreenSize, (height/10, height/5))
         pygame.draw.rect(screen, (r, g, b), (height/10, height/3, SLIDER_LENGTH, SLIDER_HEIGHT), 0)
         pygame.draw.rect(screen, (r, g, b), ((height/10) + ((height - MIN_HEIGHT)*SLIDER_LENGTH/(MAX_HEIGHT - MIN_HEIGHT)), height/3 - (SLIDER_HEIGHT*5), SLIDER_HEIGHT*5, SLIDER_HEIGHT*10), 0)
+        
         #toggles for sfx and music
-        sfxText = comicSans.render("SFX:", 0, (r, g, b))
-        screen.blit(sfxText, (height/15, height*3/5))
-        musicText = comicSans.render("Music:", 0, (r, g, b))
-        screen.blit(musicText, (height/15, height*7/10))
-        toggle = comicSans.render("ON OFF", 0, (r, g, b))
-        screen.blit(toggle, (height/5, height*3/5))
+        screen.blit(*generateText(height/15, height*3/5, "SFX:", comicSans, (r, g, b)))
+        screen.blit(*generateText(height/15, height*7/10, "Music:", comicSans, (r, g, b)))
+
+        # on/off sliders
+        screen.blit(*generateText(height/5, height*3/5, "ON OFF", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (height/5, height*3/5, height/7, height/20), 1)
-        screen.blit(toggle, (height/5, height*7/10))
+        screen.blit(*generateText(height/5, height*7/10, "ON OFF", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (height/5, height*7/10, height/7, height/20), 1)
+
         if soundEffects:
             pygame.draw.rect(screen, (r, g, b), (height*13/50, height*3/5, height/12, height/20), 0)
         else:
@@ -370,18 +410,13 @@ while inPlay:
 
     elif gameMode == "credits":
         #back button
-        backButton = comicSans.render("Back", 0, (r, g, b))
-        screen.blit(backButton, (height/120, 0))
+        screen.blit(*generateText(height/120, 0, "Back", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (0, 0, height/10, height/15), 1)
         #Actual credits
-        dueDate = comicSans.render( "Due Date: Mr. Grigorov", 0, (r, g, b))
-        screen.blit(dueDate, (height/10, height/12))
-        programming = comicSans.render("Basically all the code: Vivian*", 0, (r, g, b))
-        screen.blit(programming, (height/10, height*7/30))
-        sounds = comicSans.render("Music and sfx: Joseph (and possibly stolen from the Internet)", 0, (r, g, b))
-        screen.blit(sounds, (height/10, (height*7/30) + 30))
-        note = comicSans.render("*If the code is organized it was written by Joseph", 0, (r, g, b))
-        screen.blit(note, (height/2, height*9/10))
+        screen.blit(*generateCenteredText(width/2, 50, "Due Date: Mr. Grigorov", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 100, "Basically all the code: Vivian", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 150, "Music: The internet", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 200, "sfx and morale encouragement: Joseph", comicSans, (r, g, b)))
     elif gameMode == "game":
         if playMusic:
             pygame.mixer.music.set_volume(0.7)
@@ -398,9 +433,9 @@ while inPlay:
                 if curTime - lastTime > THREE_SECONDS:
                     cheatInEffect = False
             elif theme == "grigorov":
-                paddleSize1 = paddleSize2*6/5
+                paddleSize1 = paddleSize2*2
             else:
-                paddleSize2 = paddleSize1*4/5
+                paddleSize2 = paddleSize1*1/4
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -454,10 +489,10 @@ while inPlay:
             player2Pos += player2Direction * (height/300)
 
         #score check
-        score = comicSans.render("Score: " + str(player1Score) + "-" + str(player2Score), 0, (r, g, b))
-        screen. blit(score, (height*35/60, 0))
+        screen.blit(*generateCenteredText(width/2, 25, "Score: " + str(player1Score) + "-" + str(player2Score), comicSans, (r, g, b)))
         if (player1Score == 7) or (player2Score == 7):
             gameMode = "winScreen"
+
         #draw stuff based on theme assigned by date
         if (theme == "default" or theme == "aprfools") or (ballImage == None or paddleImage == None):
             if (ballImage == None or paddleImage == None) and (theme != "default" and theme != "aprfools"):
@@ -477,13 +512,11 @@ while inPlay:
         ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
         if player1Score == 7:
-            winMessage = comicSans.render("Player 1 wins!", 0, (r, g, b))
-            screen.blit(winMessage, (height*13/24, height*9/20))
+            screen.blit(*generateCenteredText(width/2, 150, "Player 1 wins!", titleComicSans, (r, g, b)))
         else:
-            winMessage = comicSans.render("Player 2 wins!", 0, (r, g, b))
-            screen.blit(winMessage, (height*13/24, height*9/20))
-        playAgainMessage = comicSans.render("Click anywhere or any  key to return to the main menu", 0, (r, g, b))
-        screen.blit(playAgainMessage, (height/4, height*2/3))
+            screen.blit(*generateCenteredText(width/2, 150, "Player 2 wins!", titleComicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, height - 150, "Click anywhere or any  key to return to the main menu", comicSans, (r, g, b)))
+
     elif gameMode == "pause":
         if playMusic:
             pygame.mixer.music.set_volume(0.3)
@@ -503,39 +536,12 @@ while inPlay:
             screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
 
         screen.blit(pauseBackground, (0, 0)) #transparent background is cool
-        screen.blit(*drawCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
-        screen.blit(*drawCenteredText(width/2, 150, "Press Enter to return", comicSans, (r, g, b)))
-        screen.blit(*drawCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 150, "Press Enter to return", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, (r, g, b)))
     #change colours
+    dr, dg, db, r, g, b = cycleRGB(dr, dg, db, r, g, b)
 
-    r += dr
-    g += dg
-    b += db
-    if r >= 255 and g >= 255:
-        dr = -1
-        dg = 0
-        db = 0
-    elif r >= 255 and b >= 255:
-        dr = 0
-        dg = 0
-        db = -1
-    elif r >= 255 and b == 0:
-        dr = 0
-        dg = 1
-        db = 0
-    elif g >= 255 and b >= 255:
-        dr = 0
-        dg = -1
-        db = 0
-    elif g >= 255 and r== 0:
-        dr = 0
-        dg = 0
-        db = 1
-    elif b >= 255 and g == 0:
-        dr = 1
-        dg = 0
-        db = 0
-    
     #draw over
     pygame.display.update()
     pygame.display.flip()
