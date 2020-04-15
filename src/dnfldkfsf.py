@@ -323,10 +323,10 @@ while inPlay:
                 elif mouseIsIn(mouse, (height/5, height*7/10),
                                       (height/5 + height/7, height*7/10 + height/20)):
                     playMusic = not playMusic
-                elif (mouseX >= height/10) and (mouseX <= (height/10) + (SLIDER_LENGTH)) and (mouseY >= (height/3) - (SLIDER_HEIGHT*5)) and (mouseY <= (height/3) + (SLIDER_HEIGHT*5)):
+                elif mouseIsIn(mouse, (height/10, (height/3) - (SLIDER_HEIGHT*5)), (height/10 + SLIDER_LENGTH, height/3 + (SLIDER_HEIGHT*5))):
                     onSlider = True
 
-            elif (onSlider) and ((event.type == pygame.MOUSEMOTION) or(event.type == pygame.MOUSEBUTTONUP)):
+            if (event.type == pygame.MOUSEMOTION) and (onSlider):
                 mouseX, mouseY = pygame.mouse.get_pos()
                 height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
                 screen = pygame.display.set_mode((int(height*4/3), int(height)))
