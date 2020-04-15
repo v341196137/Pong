@@ -118,8 +118,8 @@ theme = ""
 if month == 4 and day == 1:
     theme = "aprfools"
     bgMusic = "Blursed Kahoot.ogg"
-elif month == 9 and day == 20:
-    theme = "joseph"
+elif (month == 9 and day == 20) or (month == 8 and day == 13):
+    theme = "creators"
     ballImage = loadTransparentImage("thonk.gif")
     paddleImage = loadImage("creeper.png")
     bgMusic = "Kahoot.ogg"
@@ -194,6 +194,22 @@ def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
     
     return False
 
+def makeVolumeWeird():
+    rng = randint(1, 100)
+
+    if rng > 90:
+        pygame.mixer.music.set_volume(0.72)
+    elif rng < 10:
+        pygame.mixer.music.set_volume(0.0)
+    elif rng > 10 and rng < 25:
+        pygame.mixer.music.set_volume(0.1)
+    elif rng > 25 and rng < 40: 
+        pygame.mixer.music.set_volume(0.25)
+    elif rng > 80 and rng < 90:
+        pygame.mixer.music.set_volume(0.6)
+    else:
+        pygame.mixer.music.set_volume(0.4)
+
 def clampValue(val, minimum, maximum):
     if val < minimum:
         val = minimum
@@ -255,12 +271,13 @@ inPlay = True
 if bgMusic:
     loadMusic(bgMusic)
 
-pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.set_volume(0.4)
+previousTime = time.time()*ONE_SECOND
 
 while inPlay:
     #fill screen based on theme
     if not cheatInEffect:
-        if theme == "default" or theme == "joseph" or theme == "halloween":
+        if theme == "default" or theme == "creators" or theme == "halloween":
             screen.fill((0, 0, 0))
         elif theme == "aprfools":
             screen.fill((255 - r, 255 - g, 255 -b))
@@ -268,15 +285,20 @@ while inPlay:
             screen.fill((200, 230, 255))
         elif theme == "grigorov":
             screen.fill((255, 255, 255))
-    
     else:
         screen.fill((255 - r, 255 - g, 255 -b))
         cr = clampValue(r, 1, 200)
         cg = clampValue(r, 1, 200)
         cb = clampValue(r, 1, 200)
         for i in range(8):
-            pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, width), randint(1, height), randint(25, 500), randint(25, 500)), 1)
+            pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, int(width)), randint(1, int(height)), randint(25, 500), randint(25, 500)), 1)
         screen.blit(*generateCenteredText(width/2, height/2, "CHEAT ACTIVATED", titleComicSans, (r, g, b)))
+
+    currentTime = time.time()*ONE_SECOND
+    if playMusic and theme == "halloween" and currentTime - previousTime > 1000:
+        previousTime = currentTime
+        
+        makeVolumeWeird()
 
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
@@ -329,6 +351,7 @@ while inPlay:
             elif (onSlider) and ((event.type == pygame.MOUSEMOTION) or(event.type == pygame.MOUSEBUTTONUP)):
                 mouseX, mouseY = pygame.mouse.get_pos()
                 height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
+                width = height * 4/3
                 screen = pygame.display.set_mode((int(height*4/3), int(height)))
                 comicSans = createFont("Comic Sans MS", height/30)
                 buttonComicSans = createFont("Comic Sans MS", height/20)
@@ -370,11 +393,16 @@ while inPlay:
                     player1Direction = 0
                 elif (event.key == pygame.K_i) or (event.key == pygame.K_k):
                     player2Direction = 0
+                    
         elif gameMode == "winScreen":
             gameMode = "menu"
+
         elif gameMode == "pause":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    ballX, ballY, ballSpeed, angle = resetGame()
+                    if playMusic:
+                        pygame.mixer.music.set_volume(0.4)
                     gameMode = "menu"
                 elif event.key == pygame.K_RETURN:
                     gameMode = "game"
@@ -428,7 +456,7 @@ while inPlay:
         else:
             pygame.draw.rect(screen, (r, g, b), (height/5, height*3/5, height/15, height/20), 0)
         if playMusic:
-            pygame.mixer.music.set_volume(0.7)
+            pygame.mixer.music.set_volume(0.4)
             pygame.draw.rect(screen, (r, g, b), (height*13/50, height*7/10, height/12, height/20), 0)
         else:
             pygame.mixer.music.set_volume(0)
@@ -442,13 +470,13 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, 50, "Due Date: Mr. Grigorov", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 100, "Basically all the code: Vivian", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 150, "Music: The internet", comicSans, (r, g, b)))
-        screen.blit(*generateCenteredText(width/2, 200, "sfx and morale encouragement: Joseph", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 200, "sfx, some code, morale encouragement: Joseph", comicSans, (r, g, b)))
     elif gameMode == "game":
-        if playMusic:
-            pygame.mixer.music.set_volume(0.7)
+        if playMusic and theme != "halloween":
+            pygame.mixer.music.set_volume(0.4)
         #cheats are fun
         if cheatInEffect:
-            if theme == "joseph":
+            if theme == "creators":
                 ballSize = height/24
             elif theme == "halloween":
                 ballX += (ballSpeed*ballDirX)*2
@@ -484,7 +512,7 @@ while inPlay:
             cheatInEffect = False
             rgbMod = 1
 
-            if theme == "joseph":
+            if theme == "creators":
                 ballSize = height/12
             elif theme == "grigorov":
                 paddleSize1 = paddleSize2
@@ -536,7 +564,7 @@ while inPlay:
             else:
                 screen.blit(pygame.transform.scale(ballImage, (int(ballSize), int(ballSize))), (ballX, ballY))
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), int(paddleSize1))), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), int(paddleSize2))), (int(height*6/5), player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
@@ -547,8 +575,8 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, height - 150, "Click anywhere or any  key to return to the main menu", comicSans, (r, g, b)))
 
     elif gameMode == "pause":
-        if playMusic:
-            pygame.mixer.music.set_volume(0.3)
+        if playMusic and theme != "halloween":
+            pygame.mixer.music.set_volume(0.1)
         if (theme == "default" or theme == "aprfools") or (ballImage == None or paddleImage == None): #draw the old paddle and stuff
             if (ballImage == None or paddleImage == None) and (theme != "default" and theme != "aprfools"):
                 print("Had trouble loading a ball or paddle image.")
@@ -561,8 +589,8 @@ while inPlay:
                 screen.blit(pygame.transform.scale(iceImage, (int(ballSize), int(ballSize))), (ballX, ballY))
             else:
                 screen.blit(pygame.transform.scale(ballImage, (int(ballSize), int(ballSize))), (ballX, ballY))
-            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), int(paddleSize1))), (int(height/15), player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), int(paddleSize2))), (int(height*6/5), player2Pos))
 
         screen.blit(pauseBackground, (0, 0)) #transparent background is cool
         screen.blit(*generateCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
