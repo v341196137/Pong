@@ -101,6 +101,8 @@ hitSound, pointSound = None, None
 bgMusic = None
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
+onSlider = False
+
 grigorovMode = False
 
 pygame.display.set_caption("Pong")
@@ -250,16 +252,23 @@ while inPlay:
                     elif (mouseY >= height*7/10) and (mouseY <= (height*7/10) + (height/20)):
                         playMusic = not playMusic
                 elif (mouseX >= height/10) and (mouseX <= (height/10) + (SLIDER_LENGTH)) and (mouseY >= (height/3) - (SLIDER_HEIGHT*5)) and (mouseY <= (height/3) + (SLIDER_HEIGHT*5)):
-                    height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
-                    screen = pygame.display.set_mode((height*4/3, height))
-                    comicSans = createFont("Comic Sans MS", height/30)
-                    buttonComicSans = createFont("Comic Sans MS", height/20)
-                    titleComicSans = createFont("Comic Sans MS", height/10)
-                    paddleSize1 = height/6
-                    paddleSize2 = height/6
-                    ballSize = height/12
-                    player1Pos = (height/2) - (paddleSize1/2)
-                    player2Pos = (height/2) - (paddleSize2/2)
+                    onSlider = True
+            elif (onSlider) and ((event.type == pygame.MOUSEMOTION) or(event.type == pygame.MOUSEBUTTONUP)):
+                print event.type == pygame.MOUSEMOTION
+                mouseX, mouseY = pygame.mouse.get_pos()
+                print mouseX
+                height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
+                screen = pygame.display.set_mode((height*4/3, height))
+                comicSans = createFont("Comic Sans MS", height/30)
+                buttonComicSans = createFont("Comic Sans MS", height/20)
+                titleComicSans = createFont("Comic Sans MS", height/10)
+                paddleSize1 = height/6
+                paddleSize2 = height/6
+                ballSize = height/12
+                player1Pos = (height/2) - (paddleSize1/2)
+                player2Pos = (height/2) - (paddleSize2/2)
+            if (onSlider) and (event.type == pygame.MOUSEBUTTONUP):
+                onSlider = False
 
         elif gameMode == "credits":
             if event.type == pygame.MOUSEBUTTONDOWN:
