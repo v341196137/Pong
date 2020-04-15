@@ -9,7 +9,7 @@ import sys
 import random
 import datetime
 import time
-from random import randrange
+from random import randrange, randint
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()  # start the hell
@@ -94,6 +94,8 @@ curTime = 0
 
 player1Score = 0
 player2Score = 0
+
+rgbMod = 1
 
 soundEffects = True
 playMusic = True
@@ -192,10 +194,23 @@ def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
     
     return False
 
-def cycleRGB(dr, dg, db, r, g, b):
-    r += dr
-    g += dg
-    b += db
+def clampValue(val, minimum, maximum):
+    if val < minimum:
+        val = minimum
+    if val > maximum:
+        val = maximum
+
+    return val
+
+def cycleRGB(dr, dg, db, r, g, b, mod):
+    r += (dr * mod)
+    g += (dg * mod)
+    b += (db * mod)
+
+    r = clampValue(r, 0, 255)
+    g = clampValue(g, 0, 255)
+    b = clampValue(b, 0, 255)
+    
     if r >= 255 and g >= 255:
         dr = -1
         dg = 0
@@ -244,14 +259,24 @@ pygame.mixer.music.set_volume(0.7)
 
 while inPlay:
     #fill screen based on theme
-    if theme == "default" or theme == "joseph" or theme == "halloween":
-        screen.fill((0, 0, 0))
-    elif theme == "aprfools":
+    if not cheatInEffect:
+        if theme == "default" or theme == "joseph" or theme == "halloween":
+            screen.fill((0, 0, 0))
+        elif theme == "aprfools":
+            screen.fill((255 - r, 255 - g, 255 -b))
+        elif theme == "christmas":
+            screen.fill((200, 230, 255))
+        elif theme == "grigorov":
+            screen.fill((255, 255, 255))
+    
+    else:
         screen.fill((255 - r, 255 - g, 255 -b))
-    elif theme == "christmas":
-        screen.fill((200, 230, 255))
-    elif theme == "grigorov":
-        screen.fill((255, 255, 255))
+        cr = clampValue(r, 1, 200)
+        cg = clampValue(r, 1, 200)
+        cb = clampValue(r, 1, 200)
+        for i in range(8):
+            pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, width), randint(1, height), randint(25, 500), randint(25, 500)), 1)
+        screen.blit(*generateCenteredText(width/2, height/2, "CHEAT ACTIVATED", titleComicSans, (r, g, b)))
 
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
@@ -336,6 +361,7 @@ while inPlay:
                 elif (event.key == pygame.K_q) and (not cheatUsed):
                     cheatUsed = True
                     cheatInEffect = True
+                    rgbMod = 7
                     if theme == "christmas":
                         lastTime = time.time()*ONE_SECOND
                         curTime = time.time()*ONE_SECOND
@@ -432,6 +458,7 @@ while inPlay:
                 curTime = time.time()*1000
                 if curTime - lastTime > THREE_SECONDS:
                     cheatInEffect = False
+                    rgbMod = 1
             elif theme == "grigorov":
                 paddleSize1 = paddleSize2*2
             else:
@@ -455,6 +482,8 @@ while inPlay:
                 pointSound.play()
             #reset the cheat after scoring a point
             cheatInEffect = False
+            rgbMod = 1
+
             if theme == "joseph":
                 ballSize = height/12
             elif theme == "grigorov":
@@ -540,7 +569,7 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, 150, "Press Enter to return", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, (r, g, b)))
     #change colours
-    dr, dg, db, r, g, b = cycleRGB(dr, dg, db, r, g, b)
+    dr, dg, db, r, g, b = cycleRGB(dr, dg, db, r, g, b, rgbMod)
 
     #draw over
     pygame.display.update()
