@@ -564,7 +564,7 @@ while inPlay:
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
             screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
 
-        screen.blit(pauseBackground, (0, 0)) #transparent background is cool
+        screen.blit(pygame.transform.scale(pauseBackground, (height*4/3, height)), (0, 0)) #transparent background is cool
         screen.blit(*generateCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 150, "Press Enter to return", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, (r, g, b)))
