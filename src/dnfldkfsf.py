@@ -542,7 +542,7 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, 50, "Due Date: Mr. Grigorov", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 100, "Basically all the code: Vivian", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 150, "Music: The internet", comicSans, (r, g, b)))
-        screen.blit(*generateCenteredText(width/2, 200, "sfx, readability of the code, basically all the functions, and morale encouragement: Joseph", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 200, "sfx, readability of the code, and morale encouragement: Joseph", comicSans, (r, g, b)))
     elif gameMode == "game":
         if playMusic and theme != "halloween":
             pygame.mixer.music.set_volume(0.4)
