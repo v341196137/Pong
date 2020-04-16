@@ -15,19 +15,25 @@ pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()  # start the hell
 
 ########## CONSTS ##########
+# default sizes
 DEFAULT_WIDTH = 800
 DEFAULT_HEIGHT = 600
 DEFAULT_PADDLE_SIZE = 100
 DEFAULT_BALL_SIZE = 50
+# boundaries for how big the screen can get
 MIN_HEIGHT = 300
 MAX_HEIGHT = 1080
+# speed ball increases at
 BALL_SPEED_INCREASE = 240000
 
+# colours
 BLACK = (0, 0, 0)
 
+# times
 ONE_SECOND = 1000
 THREE_SECONDS = 3000
 
+# sizes for the slider
 SLIDER_LENGTH = 200
 SLIDER_HEIGHT = 2
 ############################
@@ -51,36 +57,43 @@ def createFont(font, size):
 ##############################################
 
 ########## VARIABLES ##########
-
+# assigning variables for dimensions
 height = DEFAULT_HEIGHT
 width = DEFAULT_WIDTH
 
+# fonts
 comicSans = createFont("Comic Sans MS", height/30)
 buttonComicSans = createFont("Comic Sans MS", height/20)
 titleComicSans = createFont("Comic Sans MS", height/10)
 
+# images for the interface
 pauseBackground = loadTransparentImage("pauseScreenBack.png")
 gameLogo = loadTransparentImage("gameLogo.png")
 
+# game size variables 
 paddleSize1 = DEFAULT_PADDLE_SIZE
 paddleSize2 = DEFAULT_PADDLE_SIZE
 ballSize = DEFAULT_BALL_SIZE
 
+# game player variables
 player1Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
 player2Pos = (height/2) - (DEFAULT_PADDLE_SIZE/2)
 player1Direction = 0
 player2Direction = 0
 
+# set ball to be going in a random direction of either 1 or -1 in both c and y
 ballDirY = randrange(-1, 2, 2)
 ballDirX = randrange(-1, 2, 2)
 
+# game cheat flags
 cheatUsed = False
 cheatInEffect = False
 
-r = 255
+# rgb stuff colours
+r = 255 #r, g, b reprsents the amount of red, green and blue respectively
 g = 0
 b = 0
-dr = 0
+dr = 0 #dr, dg, db is the change in red, green, and blue respectively
 dg = 1
 db = 0
 
@@ -88,14 +101,15 @@ rules = ["Welcome to Pong!", "Player 1 uses W and S to move the paddle up and do
         "Player 2 uses I and K to move the paddle up and down", "Player 1 can also use Q as a cheat key", 
         "Press the escape key in game to pause game", "First to 7 wins the game", "Good luck!"]
 
+# date/time related stuffs
 month, day = datetime.datetime.now().month, datetime.datetime.now().day
-lastTime = 0
+lastTime = 0 #lastTime and curTime are used as a timer without the use of delay
 curTime = 0
 
 player1Score = 0
 player2Score = 0
 
-rgbMod = 1
+rgbMod = 1 #speed for changing the colours
 
 soundEffects = True
 playMusic = True
@@ -103,18 +117,19 @@ playMusic = True
 ballImage, paddleImage, iceImage = None, None, None
 hitSound, pointSound = None, None
 bgMusic = None
+
 ballX, ballY, ballSpeed, angle = 0, 0, 0, 0
 
 onSlider = False
 
-grigorovMode = False
+grigorovMode = False #hi Mr. Grigorov
 
 pygame.display.set_caption("Pong")
 pygame.display.set_icon(gameLogo)
 ###############################
 
 #create the theme
-theme = ""
+theme = "" #theme is based on the day, different themes have different cheats, different looks, and different sounds
 if month == 4 and day == 1:
     theme = "aprfools"
     bgMusic = "Blursed Kahoot.ogg"
@@ -247,10 +262,11 @@ def loadMusic(music):
 
 ########## GAME ##########
 #start the game
-gameMode = "menu"
+gameMode = "menu" #a string that keeps track of which mode the game is in, eg. settings, menu, etc.
+                        #determines which parts of the code to run
 hitSound, pointSound = determineSFX(theme)
 ballX, ballY, ballSpeed, angle = resetGame()
-inPlay = True
+inPlay = True 
 
 if bgMusic:
     loadMusic(bgMusic)
@@ -258,10 +274,11 @@ if bgMusic:
 pygame.mixer.music.set_volume(0.7)
 
 while inPlay:
-    #fill screen based on theme
+    
     if not cheatInEffect:
+        #fill screen based on theme
         if theme == "default" or theme == "joseph" or theme == "halloween":
-            screen.fill((0, 0, 0))
+            screen.fill(BLACK)
         elif theme == "aprfools":
             screen.fill((255 - r, 255 - g, 255 -b))
         elif theme == "christmas":
@@ -270,10 +287,13 @@ while inPlay:
             screen.fill((255, 255, 255))
     
     else:
-        screen.fill((255 - r, 255 - g, 255 -b))
+        #different story for fill if cheat is in effect :D
+        screen.fill((255 - r, 255 - g, 255 -b))#opposite colour as what everything else is drawn in
+        #generates a different colour from what the screen and everything else is in
         cr = clampValue(r, 1, 200)
         cg = clampValue(r, 1, 200)
         cb = clampValue(r, 1, 200)
+        #rectangles are cool
         for i in range(8):
             pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, width), randint(1, height), randint(25, 500), randint(25, 500)), 1)
         screen.blit(*generateCenteredText(width/2, height/2, "CHEAT ACTIVATED", titleComicSans, (r, g, b)))
@@ -281,8 +301,8 @@ while inPlay:
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
         if gameMode != "game":
-            mouse = pygame.mouse.get_pos()
-            mouseX, mouseY = mouse
+            mouse = pygame.mouse.get_pos() # game is the only gameMode without buttons 
+            mouseX, mouseY = mouse # get mouse position to handle all the buttons
 
         if event.type == pygame.QUIT:
             inPlay = False
@@ -328,7 +348,9 @@ while inPlay:
 
             if (event.type == pygame.MOUSEMOTION) and (onSlider):
                 mouseX, mouseY = pygame.mouse.get_pos()
-                height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT
+                height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT # calculation of new height
+                # height is calculated based on the ratio of where the mouse is on the slider to the smallest and largest height possible
+                #reset everything based on the new height
                 screen = pygame.display.set_mode((int(height*4/3), int(height)))
                 comicSans = createFont("Comic Sans MS", height/30)
                 buttonComicSans = createFont("Comic Sans MS", height/20)
@@ -362,8 +384,8 @@ while inPlay:
                     cheatUsed = True
                     cheatInEffect = True
                     rgbMod = 7
-                    if theme == "christmas":
-                        lastTime = time.time()*ONE_SECOND
+                    if theme == "christmas":# the christmas cheat is freezing the ball for 3 seconds
+                        lastTime = time.time()*ONE_SECOND # timer starts
                         curTime = time.time()*ONE_SECOND
             elif event.type == pygame.KEYUP:
                 if (event.key == pygame.K_w) or (event.key == pygame.K_s):
@@ -423,6 +445,7 @@ while inPlay:
         screen.blit(*generateText(height/5, height*7/10, "ON OFF", comicSans, (r, g, b)))
         pygame.draw.rect(screen, (r, g, b), (height/5, height*7/10, height/7, height/20), 1)
 
+        # logic to determine where to place the "switch"
         if soundEffects:
             pygame.draw.rect(screen, (r, g, b), (height*13/50, height*3/5, height/12, height/20), 0)
         else:
@@ -442,27 +465,27 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, 50, "Due Date: Mr. Grigorov", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 100, "Basically all the code: Vivian", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 150, "Music: The internet", comicSans, (r, g, b)))
-        screen.blit(*generateCenteredText(width/2, 200, "sfx and morale encouragement: Joseph", comicSans, (r, g, b)))
+        screen.blit(*generateCenteredText(width/2, 200, "sfx, readability of the code, basically all the functions, and morale encouragement: Joseph", comicSans, (r, g, b)))
     elif gameMode == "game":
         if playMusic:
             pygame.mixer.music.set_volume(0.7)
         #cheats are fun
-        if cheatInEffect:
+        if cheatInEffect: #different modes have different cheats
             if theme == "joseph":
-                ballSize = height/24
+                ballSize = height/24#smaller ball
             elif theme == "halloween":
-                ballX += (ballSpeed*ballDirX)*2
+                ballX += (ballSpeed*ballDirX)*2#triple speed of the ball
             elif theme == "christmas":
-                ballX -= ballSpeed*ballDirX
+                ballX -= ballSpeed*ballDirX#freeze the ball for 3 seconds
                 ballY -= angle*ballDirY
                 curTime = time.time()*1000
-                if curTime - lastTime > THREE_SECONDS:
+                if curTime - lastTime > THREE_SECONDS:#after 3 seconds the christmas cheat is over
                     cheatInEffect = False
                     rgbMod = 1
             elif theme == "grigorov":
-                paddleSize1 = paddleSize2*2
+                paddleSize1 = paddleSize2*2#bigger paddle for you
             else:
-                paddleSize2 = paddleSize1*1/4
+                paddleSize2 = paddleSize1*1/4#tiny paddle for opponent
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -491,7 +514,8 @@ while inPlay:
             else:
                 paddleSize2 = paddleSize1
 
-        #recieve ball
+        #recieve ball based on the the distance between the middle of the paddle and where the ball hit to determine the new angle
+        #depending on if it's a positive or negative value, the ball will go up or down
         if (abs(ballX - (height/10) <= ballSpeed)) and (ballY + ballSize >= player1Pos) and (ballY <= player1Pos + paddleSize1):
             ballDirX = 1
             angle = abs((((ballY + ballSize) - (player1Pos + (paddleSize1/2)))/paddleSize1)*(height/200))
