@@ -42,17 +42,26 @@ screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
 
 ########## INITIALIZATION FUNCTIONS ##########
 def loadImage(imageName):
+    """Takes an image name, looks in /assets/pictures for it, and returns the loaded picture as a surface"""
     return pygame.image.load("./assets/pictures/"+imageName).convert()
 
 def loadTransparentImage(imageName):
+    """Takes an image name that has transparency, looks in /assets/pictures for it, and returns the loaded picture as a surface"""
     return pygame.image.load("./assets/pictures/"+imageName).convert_alpha()
 
 def loadSFX(soundEffectName): #load a sfx from the folder
+    """Takes a sfx name, looks in /assets/sfx for it, and returns the sound"""
     sound = pygame.mixer.Sound("./assets/sfx/"+soundEffectName)
     sound.set_volume(0.5)
     return sound
 
+def loadMusic(music):
+    """Takes a song name, looks in /assets/music for it, and loads the song into pygame.mixer"""
+    pygame.mixer.music.load("assets/music/" + music)
+    pygame.mixer.music.play(-1)
+
 def createFont(font, size):
+    """Takes a system font and size and returns a font"""
     return pygame.font.SysFont(font, int(size))
 ##############################################
 
@@ -133,8 +142,8 @@ theme = "" #theme is based on the day, different themes have different cheats, d
 if month == 4 and day == 1:
     theme = "aprfools"
     bgMusic = "Blursed Kahoot.ogg"
-elif month == 9 and day == 20:
-    theme = "joseph"
+elif (month == 9 and day == 20) or (month == 8 and day == 13):
+    theme = "creators"
     ballImage = loadTransparentImage("thonk.gif")
     paddleImage = loadImage("creeper.png")
     bgMusic = "Kahoot.ogg"
@@ -165,6 +174,7 @@ else:
 # @param angle, generates a random angle for the ball
 # @return returns all the values back to be reassigned because global variables are bad
 def resetGame():
+    """Resets the game, by resetting the new ball's x, y, speed and angle. Returns those values."""
     newBallX = (height*2/3) - (ballSize/2)
     newBallY = (height/2) - (ballSize/2)
     newBallSpeed = float(height)/600
@@ -173,6 +183,7 @@ def resetGame():
     return newBallX, newBallY, newBallSpeed, newAngle
 
 def drawFakeLoadScreen(screen, r, g, b):
+    """Draws a fake loading bar loading screen intended to be a transition."""
     if playMusic:
         pygame.mixer.music.set_volume(0.1)
 
@@ -182,6 +193,7 @@ def drawFakeLoadScreen(screen, r, g, b):
         pygame.display.update()
 
 def determineSFX(theme): 
+    """Loads and sets the SFX."""
     # You can use this to determine whawt the sfx should be according to the theme
     # for now it just returns the default
     newHitSound = loadSFX("defaultHit1.wav")
@@ -190,6 +202,15 @@ def determineSFX(theme):
 
 ### thanks Despongoncito 3 and Kevin for this code
 def generateCenteredText(x, y, text, font, colour):
+    """Attempts to generate a centered text and returns the text object as well as the top left corner of the centered text
+    
+    Keyword arguments:
+    x      -- The x of the center of the text, x
+    y      -- The y of the center of the text, y
+    text   -- The text to be rendered
+    font   -- The font to use for rendering
+    colour -- The colour of the final text
+    """
     textSize = font.size(text)
     renderedText = font.render(text, 1, colour)
     textX = x-textSize[0]/2
@@ -198,10 +219,26 @@ def generateCenteredText(x, y, text, font, colour):
 ###
 
 def generateText(x, y, text, font, colour):
+    """Renders a text and returns back the x andy in a way that makes it easily usable with screen.blit(*generateText())
+    
+    Keyword arguments:
+    x      -- The x of the top left corner of the text
+    y      -- The y of the top left corner of the text
+    text   -- The text to be rendered
+    font   -- The font to use for rendering
+    colour -- The colour of the final text
+    """
     #make drawing precise text neater and nicer
     return font.render(text, 1, colour), (x, y)
 
 def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
+    """Determines whether the mouse is in a certain rectangle renoted by the top left point and bottom right point.
+
+    Keyword arguments:
+    mousePos         -- A tuple, the position of the mouse
+    topLeftPoint     -- A tuple, the top left point of the rectangle to check
+    bottomRightPoint -- A tuple, the bottom right point of the rectangle to check
+    """
     #those all have to be tuples, determines if the mouse is within a range of points.
     if ((mousePos[0] >= topLeftPoint[0]) and (mousePos[0] <= bottomRightPoint[0]) 
     and (mousePos[1] >= topLeftPoint[1]) and (mousePos[1] <= bottomRightPoint[1])):
@@ -209,7 +246,31 @@ def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
     
     return False
 
+def makeVolumeWeird():
+    """Uses a random number generator to occasionally change the volume of the current music playing."""
+    rng = randint(1, 100)
+
+    if rng > 90:
+        pygame.mixer.music.set_volume(0.72)
+    elif rng < 10:
+        pygame.mixer.music.set_volume(0.0)
+    elif rng > 10 and rng < 25:
+        pygame.mixer.music.set_volume(0.1)
+    elif rng > 25 and rng < 40: 
+        pygame.mixer.music.set_volume(0.25)
+    elif rng > 80 and rng < 90:
+        pygame.mixer.music.set_volume(0.6)
+    else:
+        pygame.mixer.music.set_volume(0.4)
+
 def clampValue(val, minimum, maximum):
+    """Makes sure a value is between two specified numbers, and return it.
+    
+    Keyword arguments:
+    val     -- The value to check
+    minimum -- The number that the value must not be below. If it is, val becomes this number.
+    minimum -- The number that the value must not be above. If it is, val becomes this number.
+    """
     if val < minimum:
         val = minimum
     if val > maximum:
@@ -218,6 +279,16 @@ def clampValue(val, minimum, maximum):
     return val
 
 def cycleRGB(dr, dg, db, r, g, b, mod):
+    """Using the d values of each colour and a modifier for the speed of cycling, cycle and return the rgb as well as the d values of each colour
+    
+    dr -- change in r
+    dg -- change in g
+    db -- change in b
+    r   -- the value of red
+    g   -- the value of green
+    b   -- the value of blue
+    mod -- the modifier to change speed of cycling (0.number -> slower, >1 -> faster)
+    """
     r += (dr * mod)
     g += (dg * mod)
     b += (db * mod)
@@ -253,11 +324,6 @@ def cycleRGB(dr, dg, db, r, g, b, mod):
 
     return dr, dg, db, r, g, b
 
-
-def loadMusic(music):
-    pygame.mixer.music.load("assets/music/" + music)
-    pygame.mixer.music.play(-1)
-
 ########## FUNCTIONS ##########
 
 ########## GAME ##########
@@ -271,13 +337,13 @@ inPlay = True
 if bgMusic:
     loadMusic(bgMusic)
 
-pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.set_volume(0.4)
+previousTime = time.time()*ONE_SECOND
 
 while inPlay:
     
     if not cheatInEffect:
-        #fill screen based on theme
-        if theme == "default" or theme == "joseph" or theme == "halloween":
+        if theme == "default" or theme == "creators" or theme == "halloween":
             screen.fill(BLACK)
         elif theme == "aprfools":
             screen.fill((255 - r, 255 - g, 255 -b))
@@ -285,7 +351,6 @@ while inPlay:
             screen.fill((200, 230, 255))
         elif theme == "grigorov":
             screen.fill((255, 255, 255))
-    
     else:
         #different story for fill if cheat is in effect :D
         screen.fill((255 - r, 255 - g, 255 -b))#opposite colour as what everything else is drawn in
@@ -295,8 +360,14 @@ while inPlay:
         cb = clampValue(r, 1, 200)
         #rectangles are cool
         for i in range(8):
-            pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, width), randint(1, height), randint(25, 500), randint(25, 500)), 1)
+            pygame.draw.rect(screen, (200 - cr, 200 - cg, 200 - cb), (randint(50, int(width)), randint(1, int(height)), randint(25, 500), randint(25, 500)), 1)
         screen.blit(*generateCenteredText(width/2, height/2, "CHEAT ACTIVATED", titleComicSans, (r, g, b)))
+
+    currentTime = time.time()*ONE_SECOND
+    if playMusic and theme == "halloween" and currentTime - previousTime > 1000:
+        previousTime = currentTime
+        
+        makeVolumeWeird()
 
     #handle i/o, different i/o based on mode
     for event in pygame.event.get():
@@ -349,6 +420,7 @@ while inPlay:
             if (event.type == pygame.MOUSEMOTION) and (onSlider):
                 mouseX, mouseY = pygame.mouse.get_pos()
                 height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT # calculation of new height
+                width = height * 4/3
                 # height is calculated based on the ratio of where the mouse is on the slider to the smallest and largest height possible
                 #reset everything based on the new height
                 screen = pygame.display.set_mode((int(height*4/3), int(height)))
@@ -392,11 +464,16 @@ while inPlay:
                     player1Direction = 0
                 elif (event.key == pygame.K_i) or (event.key == pygame.K_k):
                     player2Direction = 0
+                    
         elif gameMode == "winScreen":
             gameMode = "menu"
+
         elif gameMode == "pause":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    ballX, ballY, ballSpeed, angle = resetGame()
+                    if playMusic:
+                        pygame.mixer.music.set_volume(0.4)
                     gameMode = "menu"
                 elif event.key == pygame.K_RETURN:
                     gameMode = "game"
@@ -451,7 +528,7 @@ while inPlay:
         else:
             pygame.draw.rect(screen, (r, g, b), (height/5, height*3/5, height/15, height/20), 0)
         if playMusic:
-            pygame.mixer.music.set_volume(0.7)
+            pygame.mixer.music.set_volume(0.4)
             pygame.draw.rect(screen, (r, g, b), (height*13/50, height*7/10, height/12, height/20), 0)
         else:
             pygame.mixer.music.set_volume(0)
@@ -467,25 +544,25 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, 150, "Music: The internet", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 200, "sfx, readability of the code, basically all the functions, and morale encouragement: Joseph", comicSans, (r, g, b)))
     elif gameMode == "game":
-        if playMusic:
-            pygame.mixer.music.set_volume(0.7)
+        if playMusic and theme != "halloween":
+            pygame.mixer.music.set_volume(0.4)
         #cheats are fun
         if cheatInEffect: #different modes have different cheats
-            if theme == "joseph":
-                ballSize = height/24#smaller ball
+            if theme == "creators":
+                ballSize = height/24 #smaller ball
             elif theme == "halloween":
-                ballX += (ballSpeed*ballDirX)*2#triple speed of the ball
+                ballX += (ballSpeed*ballDirX)*2 #triple speed of the ball
             elif theme == "christmas":
-                ballX -= ballSpeed*ballDirX#freeze the ball for 3 seconds
+                ballX -= ballSpeed*ballDirX #freeze the ball for 3 seconds
                 ballY -= angle*ballDirY
                 curTime = time.time()*1000
-                if curTime - lastTime > THREE_SECONDS:#after 3 seconds the christmas cheat is over
+                if curTime - lastTime > THREE_SECONDS: #after 3 seconds the christmas cheat is over
                     cheatInEffect = False
                     rgbMod = 1
             elif theme == "grigorov":
-                paddleSize1 = paddleSize2*2#bigger paddle for you
+                paddleSize1 = paddleSize2*2 #bigger paddle for you
             else:
-                paddleSize2 = paddleSize1*1/4#tiny paddle for opponent
+                paddleSize2 = paddleSize1*1/4 #tiny paddle for opponent
         #ball movement
         ballX += ballSpeed*ballDirX
         ballY += angle*ballDirY
@@ -507,7 +584,7 @@ while inPlay:
             cheatInEffect = False
             rgbMod = 1
 
-            if theme == "joseph":
+            if theme == "creators":
                 ballSize = height/12
             elif theme == "grigorov":
                 paddleSize1 = paddleSize2
@@ -560,7 +637,7 @@ while inPlay:
             else:
                 screen.blit(pygame.transform.scale(ballImage, (int(ballSize), int(ballSize))), (ballX, ballY))
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), int(paddleSize1))), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), int(paddleSize2))), (int(height*6/5), player2Pos))
         #slow increase in ball speed
         ballSpeed += float(height)/BALL_SPEED_INCREASE
     elif gameMode == "winScreen":
@@ -571,8 +648,8 @@ while inPlay:
         screen.blit(*generateCenteredText(width/2, height - 150, "Click anywhere or any  key to return to the main menu", comicSans, (r, g, b)))
 
     elif gameMode == "pause":
-        if playMusic:
-            pygame.mixer.music.set_volume(0.3)
+        if playMusic and theme != "halloween":
+            pygame.mixer.music.set_volume(0.1)
         if (theme == "default" or theme == "aprfools") or (ballImage == None or paddleImage == None): #draw the old paddle and stuff
             if (ballImage == None or paddleImage == None) and (theme != "default" and theme != "aprfools"):
                 print("Had trouble loading a ball or paddle image.")
@@ -585,8 +662,8 @@ while inPlay:
                 screen.blit(pygame.transform.scale(iceImage, (int(ballSize), int(ballSize))), (ballX, ballY))
             else:
                 screen.blit(pygame.transform.scale(ballImage, (int(ballSize), int(ballSize))), (ballX, ballY))
-            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), paddleSize1)), (int(height/15), player1Pos))
-            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), paddleSize2)), (int(height*6/5), player2Pos))
+            screen.blit(pygame.transform.scale(paddleImage, (int(height/30), int(paddleSize1))), (int(height/15), player1Pos))
+            screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), int(paddleSize2))), (int(height*6/5), player2Pos))
 
         screen.blit(pygame.transform.scale(pauseBackground, (height*4/3, height)), (0, 0)) #transparent background is cool
         screen.blit(*generateCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
