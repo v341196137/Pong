@@ -42,26 +42,17 @@ screen = pygame.display.set_mode((DEFAULT_WIDTH, DEFAULT_HEIGHT))
 
 ########## INITIALIZATION FUNCTIONS ##########
 def loadImage(imageName):
-    """Takes an image name, looks in /assets/pictures for it, and returns the loaded picture as a surface"""
     return pygame.image.load("./assets/pictures/"+imageName).convert()
 
 def loadTransparentImage(imageName):
-    """Takes an image name that has transparency, looks in /assets/pictures for it, and returns the loaded picture as a surface"""
     return pygame.image.load("./assets/pictures/"+imageName).convert_alpha()
 
 def loadSFX(soundEffectName): #load a sfx from the folder
-    """Takes a sfx name, looks in /assets/sfx for it, and returns the sound"""
     sound = pygame.mixer.Sound("./assets/sfx/"+soundEffectName)
     sound.set_volume(0.5)
     return sound
 
-def loadMusic(music):
-    """Takes a song name, looks in /assets/music for it, and loads the song into pygame.mixer"""
-    pygame.mixer.music.load("assets/music/" + music)
-    pygame.mixer.music.play(-1)
-
 def createFont(font, size):
-    """Takes a system font and size and returns a font"""
     return pygame.font.SysFont(font, int(size))
 ##############################################
 
@@ -174,7 +165,6 @@ else:
 # @param angle, generates a random angle for the ball
 # @return returns all the values back to be reassigned because global variables are bad
 def resetGame():
-    """Resets the game, by resetting the new ball's x, y, speed and angle. Returns those values."""
     newBallX = (height*2/3) - (ballSize/2)
     newBallY = (height/2) - (ballSize/2)
     newBallSpeed = float(height)/600
@@ -183,7 +173,6 @@ def resetGame():
     return newBallX, newBallY, newBallSpeed, newAngle
 
 def drawFakeLoadScreen(screen, r, g, b):
-    """Draws a fake loading bar loading screen intended to be a transition."""
     if playMusic:
         pygame.mixer.music.set_volume(0.1)
 
@@ -193,7 +182,6 @@ def drawFakeLoadScreen(screen, r, g, b):
         pygame.display.update()
 
 def determineSFX(theme): 
-    """Loads and sets the SFX."""
     # You can use this to determine whawt the sfx should be according to the theme
     # for now it just returns the default
     newHitSound = loadSFX("defaultHit1.wav")
@@ -202,15 +190,6 @@ def determineSFX(theme):
 
 ### thanks Despongoncito 3 and Kevin for this code
 def generateCenteredText(x, y, text, font, colour):
-    """Attempts to generate a centered text and returns the text object as well as the top left corner of the centered text
-    
-    Keyword arguments:
-    x      -- The x of the center of the text, x
-    y      -- The y of the center of the text, y
-    text   -- The text to be rendered
-    font   -- The font to use for rendering
-    colour -- The colour of the final text
-    """
     textSize = font.size(text)
     renderedText = font.render(text, 1, colour)
     textX = x-textSize[0]/2
@@ -219,26 +198,10 @@ def generateCenteredText(x, y, text, font, colour):
 ###
 
 def generateText(x, y, text, font, colour):
-    """Renders a text and returns back the x andy in a way that makes it easily usable with screen.blit(*generateText())
-    
-    Keyword arguments:
-    x      -- The x of the top left corner of the text
-    y      -- The y of the top left corner of the text
-    text   -- The text to be rendered
-    font   -- The font to use for rendering
-    colour -- The colour of the final text
-    """
     #make drawing precise text neater and nicer
     return font.render(text, 1, colour), (x, y)
 
 def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
-    """Determines whether the mouse is in a certain rectangle renoted by the top left point and bottom right point.
-
-    Keyword arguments:
-    mousePos         -- A tuple, the position of the mouse
-    topLeftPoint     -- A tuple, the top left point of the rectangle to check
-    bottomRightPoint -- A tuple, the bottom right point of the rectangle to check
-    """
     #those all have to be tuples, determines if the mouse is within a range of points.
     if ((mousePos[0] >= topLeftPoint[0]) and (mousePos[0] <= bottomRightPoint[0]) 
     and (mousePos[1] >= topLeftPoint[1]) and (mousePos[1] <= bottomRightPoint[1])):
@@ -247,7 +210,6 @@ def mouseIsIn(mousePos, topLeftPoint, bottomRightPoint):
     return False
 
 def makeVolumeWeird():
-    """Uses a random number generator to occasionally change the volume of the current music playing."""
     rng = randint(1, 100)
 
     if rng > 90:
@@ -264,13 +226,6 @@ def makeVolumeWeird():
         pygame.mixer.music.set_volume(0.4)
 
 def clampValue(val, minimum, maximum):
-    """Makes sure a value is between two specified numbers, and return it.
-    
-    Keyword arguments:
-    val     -- The value to check
-    minimum -- The number that the value must not be below. If it is, val becomes this number.
-    minimum -- The number that the value must not be above. If it is, val becomes this number.
-    """
     if val < minimum:
         val = minimum
     if val > maximum:
@@ -279,16 +234,6 @@ def clampValue(val, minimum, maximum):
     return val
 
 def cycleRGB(dr, dg, db, r, g, b, mod):
-    """Using the d values of each colour and a modifier for the speed of cycling, cycle and return the rgb as well as the d values of each colour
-    
-    dr -- change in r
-    dg -- change in g
-    db -- change in b
-    r   -- the value of red
-    g   -- the value of green
-    b   -- the value of blue
-    mod -- the modifier to change speed of cycling (0.number -> slower, >1 -> faster)
-    """
     r += (dr * mod)
     g += (dg * mod)
     b += (db * mod)
@@ -323,6 +268,11 @@ def cycleRGB(dr, dg, db, r, g, b, mod):
         db = 0
 
     return dr, dg, db, r, g, b
+
+
+def loadMusic(music):
+    pygame.mixer.music.load("assets/music/" + music)
+    pygame.mixer.music.play(-1)
 
 ########## FUNCTIONS ##########
 
