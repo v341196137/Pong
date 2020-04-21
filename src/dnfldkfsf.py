@@ -364,10 +364,10 @@ while inPlay:
                 elif mouseIsIn(mouse, (height/5, height*7/10),
                                       (height/5 + height/7, height*7/10 + height/20)):
                     playMusic = not playMusic
-                elif mouseIsIn(mouse, (height/10, (height/3) - (SLIDER_HEIGHT*5)), (height/10 + SLIDER_LENGTH, height/3 + (SLIDER_HEIGHT*5))):
+                elif (mouseX >= height/10) and (mouseX <= (height/10) + (SLIDER_LENGTH)) and (mouseY >= (height/3) - (SLIDER_HEIGHT*5)) and (mouseY <= (height/3) + (SLIDER_HEIGHT*5)):
                     onSlider = True
 
-            if (event.type == pygame.MOUSEMOTION) and (onSlider):
+            elif (onSlider) and ((event.type == pygame.MOUSEMOTION) or(event.type == pygame.MOUSEBUTTONUP)):
                 mouseX, mouseY = pygame.mouse.get_pos()
                 height = (mouseX - height/10)*(MAX_HEIGHT - MIN_HEIGHT)/SLIDER_LENGTH + MIN_HEIGHT # calculation of new height
                 width = height * 4/3
@@ -615,7 +615,7 @@ while inPlay:
             screen.blit(pygame.transform.scale(paddleImage, (int(height/30), int(paddleSize1))), (int(height/15), player1Pos))
             screen.blit(pygame.transform.scale(pygame.transform.flip(paddleImage, True, False), (int(height/30), int(paddleSize2))), (int(height*6/5), player2Pos))
 
-        screen.blit(pygame.transform.scale(pauseBackground, (height*4/3, height)), (0, 0)) #transparent background is cool
+        screen.blit(pauseBackground, (0, 0)) #transparent background is cool
         screen.blit(*generateCenteredText(width/2, 50, "PAUSED", titleComicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 150, "Press Enter to return", comicSans, (r, g, b)))
         screen.blit(*generateCenteredText(width/2, 200, "Press Esc to return to menu", comicSans, (r, g, b)))
